@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+@theme {
+  /* Tijdgeest kleurenpalet */
+  --color-ink: #1A1A1A;
+  --color-paper: #F2EFE6;
+  --color-terracotta: #C97B5C;
+  --color-seafoam: #A8C4B8;
+  --color-mustard: #D4A84B;
+  --color-krant: #D8D4C6;
+  --color-muted: rgba(26, 26, 26, 0.55);
+
+  /* Typografie */
+  --font-sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+
+  /* Tracking */
+  --tracking-display: -0.025em;
+  --tracking-heading: -0.01em;
+  --tracking-label: 0.2em;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
