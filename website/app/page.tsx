@@ -12,7 +12,7 @@ const clubs = [
   {
     name: "De Late Lezers",
     meta: "Fictie · Amsterdam",
-    photo: "photo-1481627834876-b7833e8f5440",
+    photo: "photo-1524995997946-a1c2e315a42f",
   },
   {
     name: "Stille Stemmen",
@@ -47,11 +47,11 @@ export default function HomePage() {
       <Nav />
 
       {/* Hero */}
-      <section className="max-w-6xl mx-auto px-6 pt-16 pb-0">
-        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-ink/50 mb-10">
+      <section className="max-w-6xl mx-auto px-6 pt-10 md:pt-16 pb-0">
+        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-ink/50 mb-8 md:mb-10">
           Modern Leesgenootschap
         </p>
-        <h1 className="text-[76px] font-black leading-[0.95] tracking-[-0.025em] mb-7 max-w-2xl">
+        <h1 className="text-[42px] md:text-[76px] font-black leading-[0.95] tracking-[-0.025em] mb-6 md:mb-7 max-w-2xl">
           Lees samen,
           <br />
           denk verder.
@@ -77,7 +77,7 @@ export default function HomePage() {
         </div>
 
         {/* Hero image */}
-        <div className="relative aspect-[16/7] overflow-hidden">
+        <div className="relative aspect-4/3 md:aspect-16/7 overflow-hidden">
           <Image
             src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1400&q=80"
             alt="Tijdgeest lezers samen"
@@ -94,8 +94,8 @@ export default function HomePage() {
       </section>
 
       {/* Stats */}
-      <section className="bg-terracotta text-paper py-10">
-        <div className="max-w-6xl mx-auto px-6 grid grid-cols-4 gap-8">
+      <section className="bg-terracotta text-paper py-8 md:py-10">
+        <div className="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
           {stats.map((stat) => (
             <div key={stat.value}>
               <div className="text-[40px] font-black leading-none tracking-tight">
@@ -112,7 +112,7 @@ export default function HomePage() {
       </section>
 
       {/* Boek van de maand */}
-      <section className="max-w-6xl mx-auto px-6 py-20 grid grid-cols-2 gap-20 items-start">
+      <section className="max-w-6xl mx-auto px-6 py-12 md:py-20 grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-20 items-start">
         {/* Boekkaart */}
         <div>
           <div className="inline-block bg-terracotta text-paper text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1.5 mb-5">
@@ -146,7 +146,7 @@ export default function HomePage() {
         </div>
 
         {/* Boekbeschrijving */}
-        <div className="pt-12">
+        <div className="pt-0 md:pt-12">
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-ink/50 mb-4">
             Boek van de maand
           </p>
@@ -195,7 +195,7 @@ export default function HomePage() {
               Zie alle clubs →
             </a>
           </div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {clubs.map((club) => (
               <a key={club.name} href="#" className="group block bg-paper">
                 <div className="relative aspect-[4/3] overflow-hidden">

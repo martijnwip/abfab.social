@@ -19,7 +19,7 @@ export default function Nav() {
           <span className="italic font-medium text-terracotta">.</span>
         </Link>
 
-        <NavigationMenu.Root>
+        <NavigationMenu.Root className="hidden md:block">
           <NavigationMenu.List className="flex gap-8">
             {navLinks.map((link) => (
               <NavigationMenu.Item key={link.href}>

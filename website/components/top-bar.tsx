@@ -11,15 +11,15 @@ export default function TopBar() {
             width={20}
             height={20}
           />
-          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-paper/90">
+          <span className="text-[10px] font-black uppercase tracking-label text-paper/90">
             Tijdgeest · Modern Leesgenootschap
           </span>
         </div>
         <div className="flex items-center gap-6">
-          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-paper/90">
+          <span className="hidden sm:block text-[10px] font-black uppercase tracking-label text-paper/90">
             Seizoen 14 · Voorjaar 2026
           </span>
-          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-paper/60">
+          <span className="hidden md:block text-[10px] font-black uppercase tracking-label text-paper/60">
             Amsterdam · Rotterdam · Utrecht · Den Haag
           </span>
         </div>
