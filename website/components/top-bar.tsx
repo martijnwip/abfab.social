@@ -12,7 +12,7 @@ export default function TopBar() {
             height={20}
           />
           <span className="text-[10px] font-black uppercase tracking-label text-paper/90">
-            Tijdgeest · Modern Leesgenootschap
+            Tijdgeest · De boeken van dit moment
           </span>
         </div>
         <div className="flex items-center gap-6">

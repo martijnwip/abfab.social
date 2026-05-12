@@ -3,7 +3,7 @@ import TopBar from "@/components/top-bar";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Tijdgeest — Modern Leesgenootschap",
+  title: "Tijdgeest — De boeken van dit moment",
   description: "Een boek per maand, samen gelezen. Tijdgeest brengt nieuwsgierige lezers bij elkaar in kleine, zorgvuldig samengestelde sessies.",
 };
 

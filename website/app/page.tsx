@@ -1,13 +1,6 @@
 import Image from "next/image";
 import Nav from "@/components/nav";
 
-const stats = [
-  { value: "1.840", label: "Leden" },
-  { value: "142", label: "Leesclubs" },
-  { value: "12", label: "Steden" },
-  { value: "Sinds '12", label: null },
-];
-
 const clubs = [
   {
     name: "De Late Lezers",
@@ -49,7 +42,7 @@ export default function HomePage() {
       {/* Hero */}
       <section className="max-w-6xl mx-auto px-6 pt-10 md:pt-16 pb-0">
         <p className="text-[10px] font-black uppercase tracking-[0.22em] text-ink/50 mb-8 md:mb-10">
-          Modern Leesgenootschap
+          De boeken van dit moment
         </p>
         <h1 className="text-[42px] md:text-[76px] font-black leading-[0.95] tracking-[-0.025em] mb-6 md:mb-7 max-w-2xl">
           Lees samen,
@@ -93,21 +86,15 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Stats */}
-      <section className="bg-terracotta text-paper py-8 md:py-10">
-        <div className="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
-          {stats.map((stat) => (
-            <div key={stat.value}>
-              <div className="text-[40px] font-black leading-none tracking-tight">
-                {stat.value}
-              </div>
-              {stat.label && (
-                <div className="text-xs font-black uppercase tracking-[0.18em] text-paper/70 mt-2">
-                  {stat.label}
-                </div>
-              )}
-            </div>
-          ))}
+      {/* Quote */}
+      <section className="bg-terracotta text-paper py-10 md:py-14">
+        <div className="max-w-3xl mx-auto px-6 text-center">
+          <p className="text-[22px] md:text-[32px] font-medium italic leading-snug tracking-tight text-paper">
+            &ldquo;Think before you speak.<br className="hidden md:block" /> Read before you think.&rdquo;
+          </p>
+          <p className="mt-4 text-[11px] font-black uppercase tracking-[0.22em] text-paper/60">
+            Fran Lebowitz
+          </p>
         </div>
       </section>
 
@@ -121,7 +108,7 @@ export default function HomePage() {
           <div className="border border-ink/10 p-8 flex gap-7 bg-paper">
             <div className="relative w-28 shrink-0 aspect-[2/3] bg-krant overflow-hidden">
               <Image
-                src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&q=80"
+                src="/scurati.jpg"
                 alt="Het Einde en het Begin"
                 fill
                 className="object-cover"
@@ -224,7 +211,7 @@ export default function HomePage() {
             <span className="italic font-medium text-terracotta">.</span>
           </span>
           <span className="text-xs text-ink/40">
-            © 2026 Tijdgeest. Modern Leesgenootschap.
+            © 2026 Tijdgeest. De boeken van dit moment.
           </span>
         </div>
       </footer>
