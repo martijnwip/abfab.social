@@ -2,6 +2,14 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function proxy(request: NextRequest) {
+  const { pathname, searchParams, origin } = request.nextUrl;
+  const code = searchParams.get("code");
+
+  // Supabase stuurt de code soms naar de root — doorsturen naar de callback
+  if (pathname === "/" && code) {
+    return NextResponse.redirect(`${origin}/auth/callback?code=${code}`);
+  }
+
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
