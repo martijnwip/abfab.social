@@ -1,10 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
+  const [token, setToken] = useState("");
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -34,6 +37,27 @@ export default function LoginPage() {
     setLoading(false);
   }
 
+  async function handleTokenSubmit(e: React.SubmitEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    const supabase = createClient();
+    const { error } = await supabase.auth.verifyOtp({
+      email,
+      token,
+      type: "email",
+    });
+
+    if (error) {
+      setError(error.message);
+    } else {
+      router.push("/");
+      router.refresh();
+    }
+    setLoading(false);
+  }
+
   return (
     <main className="flex-1 flex items-center justify-center px-6 py-20">
       <div className="w-full max-w-sm">
@@ -42,16 +66,57 @@ export default function LoginPage() {
         </p>
 
         {sent ? (
-          <div>
+          <>
             <h1 className="text-3xl font-black tracking-tight leading-tight mb-4">
               Check je inbox.
             </h1>
-            <p className="text-[15px] leading-[1.6] text-ink/60">
+            <p className="text-[15px] leading-[1.6] text-ink/60 mb-8">
               We hebben een inloglink gestuurd naar{" "}
               <span className="font-bold text-ink">{email}</span>. Klik op de
-              link in de mail om in te loggen.
+              link in de mail, of vul de code in die je hebt ontvangen.
             </p>
-          </div>
+
+            <form onSubmit={handleTokenSubmit} className="space-y-4">
+              <div>
+                <label
+                  htmlFor="token"
+                  className="block text-[10px] font-black uppercase tracking-[0.18em] text-ink/50 mb-2"
+                >
+                  Inlogcode
+                </label>
+                <input
+                  id="token"
+                  type="text"
+                  inputMode="numeric"
+                  required
+                  value={token}
+                  onChange={(e) => setToken(e.target.value.trim())}
+                  placeholder="12345678"
+                  maxLength={8}
+                  className="w-full border border-ink/20 bg-paper px-4 py-3 text-sm tracking-[0.3em] focus:outline-none focus:border-ink transition-colors"
+                />
+              </div>
+
+              {error && (
+                <p className="text-[13px] text-terracotta">{error}</p>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading || token.length < 8}
+                className="w-full bg-terracotta text-paper text-xs font-black uppercase tracking-[0.12em] px-5 py-3.5 hover:bg-terracotta/90 transition-colors disabled:opacity-50"
+              >
+                {loading ? "Controleren…" : "Bevestig code"}
+              </button>
+            </form>
+
+            <button
+              onClick={() => { setSent(false); setError(null); setToken(""); }}
+              className="mt-4 text-[11px] text-ink/40 hover:text-ink transition-colors"
+            >
+              Ander e-mailadres gebruiken
+            </button>
+          </>
         ) : (
           <>
             <h1 className="text-3xl font-black tracking-tight leading-tight mb-2">
