@@ -72,7 +72,7 @@ export default function HomePage() {
         {/* Hero image */}
         <div className="relative aspect-4/3 md:aspect-16/7 overflow-hidden">
           <Image
-            src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1400&q=80"
+            src="/helena-lopes-5Wcv4joSriY-unsplash.jpg"
             alt="Tijdgeest lezers samen"
             fill
             className="object-cover grayscale"
