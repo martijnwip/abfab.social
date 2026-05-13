@@ -40,7 +40,7 @@ export default function HomePage() {
       <Nav />
 
       {/* Hero */}
-      <section className="max-w-6xl mx-auto px-6 pt-10 md:pt-16 pb-0">
+      <section className="w-full max-w-6xl mx-auto px-6 pt-10 md:pt-16 pb-0">
         <p className="text-[10px] font-black uppercase tracking-[0.22em] text-ink/50 mb-8 md:mb-10">
           De boeken van dit moment
         </p>
@@ -70,7 +70,7 @@ export default function HomePage() {
         </div>
 
         {/* Hero image */}
-        <div className="relative aspect-4/3 md:aspect-16/7 overflow-hidden">
+        <div className="relative w-full aspect-4/3 md:aspect-16/7 overflow-hidden">
           <Image
             src="/helena-lopes-5Wcv4joSriY-unsplash.jpg"
             alt="Tijdgeest lezers samen"
