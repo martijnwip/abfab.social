@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import TopBar from "@/components/top-bar";
+import MemberStatusBar from "@/components/member-status-bar";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
@@ -17,6 +18,7 @@ export default function RootLayout({
     <html lang="nl" className="h-full antialiased">
       <body className="min-h-full flex flex-col bg-paper text-ink">
         <TopBar />
+        <MemberStatusBar />
         {children}
         <Analytics />
       </body>
