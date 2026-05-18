@@ -8,7 +8,7 @@ const sizeStyles: Record<InputSize, string> = {
   "3": "px-4 py-3 text-base",
 };
 
-type InputProps = Omit<React.ComponentProps<"input">, "size"> & {
+type InputProps = Omit<React.ComponentProps<"input">, "size" | "prefix"> & {
   label?: string;
   hint?: string;
   error?: string;
