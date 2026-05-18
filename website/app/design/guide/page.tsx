@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import FormControlsSection from "./form-controls-section";
 import NavSection from "./nav-section";
+import OverlaysSection from "./overlays-section";
 import { Callout } from "@/components/ui/callout";
 import { Card } from "@/components/ui/card";
 import { Badge, StatusBadge } from "@/components/ui/badge";
@@ -456,6 +457,119 @@ export default function ComponentGuidePage() {
 
       <div className="border-t border-ink/15 mb-16" />
 
+      {/* Sectie 08 */}
+      <Section index="08" title="Overlays">
+        <p className="text-[13px] leading-[1.7] text-ink/70 max-w-3xl mb-8">
+          Geen drop shadows op het wordmark — wél subtiele shadow op floating UI (menu&apos;s, dialogs, toasts). De shadow is warm:{" "}
+          <code className="font-mono text-[12px]">rgba(26,26,26,0.12)</code>.
+        </p>
+        <OverlaysSection />
+      </Section>
+
+      <div className="border-t border-ink/15 mb-16" />
+
+      {/* Sectie 09 */}
+      <Section index="09" title="Table">
+        <TokenRow
+          label="DataTable"
+          description="Headers caps + tracked. Rows separator gray-4. Hover gray-2."
+          tokens={[]}
+        >
+          <div className="border border-ink/12 overflow-hidden w-full max-w-2xl">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-ink/10 bg-paper">
+                  {["Titel", "Auteur", "Editie", "Status"].map((h) => (
+                    <th
+                      key={h}
+                      className="text-left px-5 py-3 text-[10px] font-black uppercase tracking-[0.18em] text-ink/40"
+                    >
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { titel: "Het ritme van een traag jaar", auteur: "M. Vermeulen", editie: "04", status: "success" as const, statusLabel: "Gelezen" },
+                  { titel: "Stilte tussen de uren",        auteur: "I. Bakker",    editie: "03", status: "warning" as const, statusLabel: "3 dgn" },
+                  { titel: "De tweede bibliotheek",        auteur: "F. el Amrani", editie: "02", status: "neutral" as const, statusLabel: "Concept" },
+                  { titel: "Brief aan een vreemde",        auteur: "J. de Wit",    editie: "01", status: "danger"  as const, statusLabel: "Achterstand" },
+                ].map((row) => (
+                  <tr key={row.titel} className="border-b border-ink/8 last:border-b-0 hover:bg-krant/30 transition-colors">
+                    <td className="px-5 py-3.5 font-black text-[13px]">{row.titel}</td>
+                    <td className="px-5 py-3.5 text-[13px] text-ink/60">{row.auteur}</td>
+                    <td className="px-5 py-3.5">
+                      <Badge variant="soft" label={row.editie} />
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <StatusBadge variant={row.status} label={row.statusLabel} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </TokenRow>
+      </Section>
+
+      <div className="border-t border-ink/15 mb-16" />
+
+      {/* Sectie 10 */}
+      <Section index="10" title="Implementatie-notities">
+        <p className="text-[13px] leading-[1.7] text-ink/70 mb-8">
+          Zo zet je dit thema op in een Radix Themes-project:
+        </p>
+
+        <div className="grid grid-cols-2 gap-4 mb-10">
+          <CodeCard
+            label="Theme Props"
+            code={`<Theme\n  accentColor="bronze"\n  grayColor="sand"\n  radius="small"\n  scaling="100%"\n  panelBackground="solid"\n  appearance="light"\n/>`}
+            note={
+              <p className="text-[12px] leading-[1.65] text-ink/60">
+                <strong className="font-black text-ink">bronze</strong> en{" "}
+                <strong className="font-black text-ink">sand</strong> zijn Radix&apos; dichtstbijzijnde stock-schalen.
+                Voor exacte match: override met onze custom hex-schalen via CSS vars.
+              </p>
+            }
+          />
+          <CodeCard
+            label="Custom Override (aanbevolen)"
+            code={`.radix-themes {\n  --accent-9: #C97B5C;\n  --accent-10: #B86A4D;\n  --accent-contrast: #FBF7F1;\n  --gray-12: #1A1A1A;\n  --gray-2: #F2EFE6;\n  /* …12 stappen elk */\n}`}
+            note={
+              <p className="text-[12px] leading-[1.65] text-ink/60">
+                Lever de volledige 12-staps schaal aan (alle hex-waarden hierboven) — Radix berekent zelf geen tussenstappen.
+              </p>
+            }
+          />
+        </div>
+
+        <div className="border-l-2 border-terracotta pl-5 py-1">
+          <p className="text-[10px] font-black uppercase tracking-label text-terracotta mb-4">
+            Aandachtspunten
+          </p>
+          <ul className="space-y-2.5">
+            {[
+              <>De brand-italic-punt achter &quot;Tijdgeest.&quot; is geen Radix-component; bouw hem als losse <code className="font-mono text-[11px]">&lt;Wordmark&gt;</code>.</>,
+              <>Helvetica Neue zit niet op alle systemen — fallback naar Helvetica → Arial is in de gids al gedefinieerd; geen extra webfont nodig.</>,
+              <>Voor de support-accents Zeegroen en Mosterd: niet als <code className="font-mono text-[11px]">accentColor</code> instellen, maar als losse data-attribute themes (<code className="font-mono text-[11px]">data-accent-color=&quot;grass&quot;</code>) of als geïsoleerde CSS-tokens voor labels en grafieken.</>,
+              <>Voor donker thema: spiegel de schaal (paper ↔ ink), behoud terracotta-9 als anker — die werkt op beide achtergronden.</>,
+            ].map((item, i) => (
+              <li key={i} className="flex items-start gap-2.5 text-[13px] leading-[1.65] text-ink/70">
+                <span className="w-1 h-1 rounded-full bg-ink/30 mt-2 shrink-0" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </Section>
+
+      {/* Footer */}
+      <footer className="border-t border-ink/15 mt-8 pt-6 flex items-center justify-between">
+        <p className="text-[11px] text-ink/40">Tijdgeest · Component Sheet v0.1</p>
+        <p className="text-[11px] text-ink/40">Radix Themes · custom theme · Mei 2026</p>
+      </footer>
+
     </main>
   );
 }
@@ -574,6 +688,24 @@ function TokenRow({
         </div>
       </div>
       <div className="pt-1">{children}</div>
+    </div>
+  );
+}
+
+function CodeCard({
+  label,
+  code,
+  note,
+}: {
+  label: string;
+  code: string;
+  note?: React.ReactNode;
+}) {
+  return (
+    <div className="border border-ink/12 bg-white p-5">
+      <p className="text-[9px] font-black uppercase tracking-label text-ink/40 mb-4">{label}</p>
+      <pre className="font-mono text-[11px] leading-[1.8] text-ink/70 whitespace-pre-wrap">{code}</pre>
+      {note && <div className="mt-4 border-t border-ink/8 pt-4">{note}</div>}
     </div>
   );
 }
