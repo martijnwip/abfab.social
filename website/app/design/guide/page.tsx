@@ -1,4 +1,8 @@
 import { Button } from "@/components/ui/button";
+import FormControlsSection from "./form-controls-section";
+import NavSection from "./nav-section";
+import { Callout } from "@/components/ui/callout";
+import { Card } from "@/components/ui/card";
 import { Badge, StatusBadge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
 import {
@@ -370,6 +374,81 @@ export default function ComponentGuidePage() {
             <Avatar initials="MR" variant="admin" />
             <Avatar initials="LB" variant="soft" />
             <Avatar initials="SD" variant="guest" />
+          </div>
+        </TokenRow>
+
+      </Section>
+
+      <div className="border-t border-ink/15 mb-16" />
+
+      {/* Sectie 05 */}
+      <Section index="05" title="Form Controls">
+        <FormControlsSection />
+      </Section>
+
+      <div className="border-t border-ink/15 mb-16" />
+
+      {/* Sectie 06 */}
+      <Section index="06" title="Navigatie">
+        <NavSection />
+      </Section>
+
+      <div className="border-t border-ink/15 mb-16" />
+
+      {/* Sectie 07 */}
+      <Section index="07" title="Callouts & Cards">
+
+        <TokenRow
+          label="Callout"
+          description="Vier statussen. Iconen klein, tekst draagt het bericht."
+          tokens={[]}
+        >
+          <div className="space-y-3 max-w-2xl">
+            <Callout variant="success" label="Leeskring start volgende week.">
+              Je krijgt maandag de eerste vraag in je inbox.
+            </Callout>
+            <Callout variant="warning" label="Bijna deadline.">
+              Hoofdstuk 7 wordt vrijdag besproken — je hebt nog 3 dagen.
+            </Callout>
+            <Callout variant="danger" label="Achterstand.">
+              Je leest momenteel 2 weken achter op de planning. Wil je een lichter ritme kiezen?
+            </Callout>
+            <Callout variant="neutral" label="Tip.">
+              Sleep een boek naar de zijbalk om het te bewaren voor later.
+            </Callout>
+          </div>
+        </TokenRow>
+
+        <div className="border-t border-ink/10 my-8" />
+
+        <TokenRow
+          label="Card"
+          description="Witte surface, scherpe scale-3 radius, lichte gray-5 border."
+          tokens={[]}
+        >
+          <div className="grid grid-cols-2 gap-4 max-w-2xl">
+            <Card
+              label="Editie 04 · Boek vd maand"
+              title="Het ritme van een traag jaar"
+              description="Een meditatieve roman over tijd, herinnering en de stilte die volgt op een grote beslissing."
+              footer={
+                <>
+                  <Button variant="solid" size="md">Lees mee</Button>
+                  <Button variant="ghost" size="md" className="text-terracotta">Meer info</Button>
+                </>
+              }
+            />
+            <Card
+              label="Leeskring · 240 leden"
+              title="Korte verhalen, lange avonden"
+              description="Elke twee weken één kort verhaal. Voor wie weinig tijd heeft maar veel wil lezen."
+              footer={
+                <>
+                  <StatusBadge variant="success" label="Actief" />
+                  <Button variant="soft" size="md" className="ml-auto">Bekijk</Button>
+                </>
+              }
+            />
           </div>
         </TokenRow>
 

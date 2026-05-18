@@ -7,7 +7,7 @@ import { CheckIcon } from "@radix-ui/react-icons";
 type Props = {
   id: string;
   label: string;
-  checked?: boolean;
+  checked?: boolean | "indeterminate";
   onCheckedChange?: (checked: boolean) => void;
   disabled?: boolean;
 };
@@ -20,10 +20,13 @@ export function Checkbox({ id, label, checked, onCheckedChange, disabled }: Prop
         checked={checked}
         onCheckedChange={(v) => onCheckedChange?.(v === true)}
         disabled={disabled}
-        className="w-4 h-4 border border-ink/30 bg-paper flex items-center justify-center focus:outline-none focus:border-ink data-[state=checked]:bg-ink data-[state=checked]:border-ink disabled:opacity-40 transition-colors"
+        className="w-4 h-4 border border-ink/30 bg-paper flex items-center justify-center focus:outline-none focus:border-terracotta data-[state=checked]:bg-terracotta data-[state=checked]:border-terracotta data-[state=indeterminate]:bg-terracotta data-[state=indeterminate]:border-terracotta disabled:opacity-40 transition-colors"
       >
         <CheckboxPrimitive.Indicator>
-          <CheckIcon className="text-paper w-3 h-3" />
+          {checked === "indeterminate"
+            ? <div className="w-2 h-0.5 bg-paper" />
+            : <CheckIcon className="text-paper w-3 h-3" />
+          }
         </CheckboxPrimitive.Indicator>
       </CheckboxPrimitive.Root>
       <Label.Root htmlFor={id} className="text-sm cursor-pointer select-none">
