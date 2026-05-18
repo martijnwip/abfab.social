@@ -1,3 +1,16 @@
+import { Button } from "@/components/ui/button";
+import { Badge, StatusBadge } from "@/components/ui/badge";
+import { Avatar } from "@/components/ui/avatar";
+import {
+  BookmarkIcon,
+  Share2Icon,
+  DotsHorizontalIcon,
+  Cross2Icon,
+  PlusIcon,
+  ArrowRightIcon,
+  CalendarIcon,
+} from "@radix-ui/react-icons";
+
 export default function ComponentGuidePage() {
   return (
     <main className="min-h-screen bg-paper px-12 py-12 max-w-360 mx-auto">
@@ -221,6 +234,148 @@ export default function ComponentGuidePage() {
         </TokenRow>
 
       </Section>
+
+      <div className="border-t border-ink/15 mb-16" />
+
+      {/* Sectie 03 */}
+      <Section index="03" title="Buttons">
+        <p className="text-[13px] leading-[1.7] text-ink/70 max-w-3xl mb-8">
+          Vijf varianten conform Radix: solid, soft, surface, outline, ghost. Plus gray-equivalents voor secundaire acties. Maten 1–4.
+        </p>
+
+        <TokenRow
+          label="Accent — varianten"
+          description="Primaire actie altijd solid. Soft voor toolbar-acties. Outline/ghost voor tertiair."
+          tokens={[]}
+        >
+          <div className="flex flex-wrap items-center gap-3">
+            <Button variant="solid"   size="md">Lees verder</Button>
+            <Button variant="soft"    size="md">Bewaar</Button>
+            <Button variant="outline" size="md">Deel</Button>
+            <Button variant="outline" size="md" className="text-ink/50 border-ink/20">Annuleer</Button>
+            <Button variant="ghost"   size="md">Sla over</Button>
+          </div>
+        </TokenRow>
+
+        <div className="border-t border-ink/10 my-8" />
+
+        <TokenRow
+          label="Gray — varianten"
+          description="Voor neutrale of destructieve afgeleide acties."
+          tokens={[]}
+        >
+          <div className="flex flex-wrap items-center gap-3">
+            <Button variant="gray-solid"   size="md">Bevestig</Button>
+            <Button variant="gray-soft"    size="md">Terug</Button>
+            <Button variant="gray-outline" size="md">Sluiten</Button>
+            <Button variant="gray-outline" size="md" disabled>Uitgeschakeld</Button>
+          </div>
+        </TokenRow>
+
+        <div className="border-t border-ink/10 my-8" />
+
+        <TokenRow
+          label="Maten 1–4"
+          description="De meeste UI gebruikt maat 2. Maat 4 voor hero-CTAs."
+          tokens={["24 · 32 · 40 · 48 px"]}
+        >
+          <div className="flex flex-wrap items-end gap-3">
+            <Button variant="solid" size={1}>Klein</Button>
+            <Button variant="solid" size={2}>Standaard</Button>
+            <Button variant="solid" size={3}>Groot</Button>
+            <Button variant="solid" size={4}>Hero CTA</Button>
+          </div>
+        </TokenRow>
+
+        <div className="border-t border-ink/10 my-8" />
+
+        <TokenRow
+          label="Met icoon"
+          description="Icoon links of rechts van label; equal padding aan beide zijden."
+          tokens={[]}
+        >
+          <div className="flex flex-wrap items-center gap-3">
+            <Button variant="solid" size="md">
+              <PlusIcon /> Nieuwe leeskring
+            </Button>
+            <Button variant="soft" size="md">
+              Verder lezen <ArrowRightIcon />
+            </Button>
+            <Button variant="outline" size="md">
+              <CalendarIcon /> Editie kiezen
+            </Button>
+          </div>
+        </TokenRow>
+
+        <div className="border-t border-ink/10 my-8" />
+
+        <TokenRow
+          label="IconButton"
+          description="Vierkant. Voor compacte toolbars naast invoer."
+          tokens={[]}
+        >
+          <div className="flex items-center gap-3">
+            <Button variant="solid"        size="icon"><BookmarkIcon /></Button>
+            <Button variant="soft"         size="icon"><Share2Icon /></Button>
+            <Button variant="gray-outline" size="icon"><DotsHorizontalIcon /></Button>
+            <Button variant="ghost"        size="icon"><Cross2Icon /></Button>
+          </div>
+        </TokenRow>
+
+      </Section>
+
+      <div className="border-t border-ink/15 mb-16" />
+
+      {/* Sectie 04 */}
+      <Section index="04" title="Badges & Avatars">
+
+        <TokenRow
+          label="Badge — varianten"
+          description="Voor labels op boeken, status van leeskringen, edities."
+          tokens={[]}
+        >
+          <div className="flex flex-wrap items-center gap-3">
+            <Badge variant="solid"   label="Boek vd maand" />
+            <Badge variant="soft"    label="Editie 04" />
+            <Badge variant="outline" label="Non-fictie" />
+            <Badge variant="outline" label="Nederlands" />
+          </div>
+        </TokenRow>
+
+        <div className="border-t border-ink/10 my-8" />
+
+        <TokenRow
+          label="Badge — status"
+          description="Semantische statussen voor leesvoortgang, deadlines, fouten."
+          tokens={[]}
+        >
+          <div className="flex flex-wrap items-center gap-3">
+            <StatusBadge variant="success" label="Uitgelezen" />
+            <StatusBadge variant="warning" label="Nog 3 dagen" />
+            <StatusBadge variant="danger"  label="Achterstand" />
+            <StatusBadge variant="neutral" label="Concept" />
+          </div>
+        </TokenRow>
+
+        <div className="border-t border-ink/10 my-8" />
+
+        <TokenRow
+          label="Avatar"
+          description="Terracotta voor leden, inkt voor moderators, soft voor gasten."
+          tokens={[]}
+        >
+          <div className="flex items-center gap-3">
+            <Avatar initials="EM" variant="member" />
+            <Avatar initials="JK" variant="member" />
+            <Avatar initials="MR" variant="admin" />
+            <Avatar initials="LB" variant="soft" />
+            <Avatar initials="SD" variant="guest" />
+          </div>
+        </TokenRow>
+
+      </Section>
+
+      <div className="border-t border-ink/15 mb-16" />
 
     </main>
   );
