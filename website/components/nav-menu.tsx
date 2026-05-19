@@ -5,8 +5,8 @@ import Link from "next/link";
 
 const navLinks = [
   { label: "Boeken", href: "/boeken" },
-  { label: "Leesclubs", href: "/leesclubs" },
-  { label: "Edities", href: "/edities" },
+  { label: "Formats", href: "/formats" },
+  { label: "On Request", href: "/on-request" },
   { label: "Agenda", href: "/agenda" },
 ];
 
