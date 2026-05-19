@@ -1,15 +1,40 @@
 "use client";
 
 import { useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function NominationForm() {
   const [count, setCount] = useState(4);
   const [locatie, setLocatie] = useState<"buurt" | "online">("buurt");
+  const [titel, setTitel] = useState("");
+  const [auteur, setAuteur] = useState("");
+  const [waarom, setWaarom] = useState("");
+  const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSubmitted(true);
+    setLoading(true);
+    setError(null);
+
+    const supabase = createClient();
+    const { error } = await supabase.from("nominations").insert({
+      titel,
+      auteur: auteur || null,
+      waarom: waarom || null,
+      aantal_medelezers: count,
+      voorkeur_locatie: locatie,
+      email,
+    });
+
+    if (error) {
+      setError("Er ging iets mis. Probeer het opnieuw.");
+    } else {
+      setSubmitted(true);
+    }
+    setLoading(false);
   }
 
   if (submitted) {
@@ -33,6 +58,8 @@ export default function NominationForm() {
           <label className="block text-[10px] font-black uppercase tracking-[0.18em] text-ink/50 mb-2">Titel</label>
           <input
             required
+            value={titel}
+            onChange={(e) => setTitel(e.target.value)}
             placeholder="bv. Tegen de natuur"
             className="w-full border border-ink/20 bg-paper px-4 py-3 text-sm focus:outline-none focus:border-ink transition-colors placeholder:text-ink/30"
           />
@@ -40,6 +67,8 @@ export default function NominationForm() {
         <div>
           <label className="block text-[10px] font-black uppercase tracking-[0.18em] text-ink/50 mb-2">Auteur</label>
           <input
+            value={auteur}
+            onChange={(e) => setAuteur(e.target.value)}
             placeholder="bv. Tommy Wieringa"
             className="w-full border border-ink/20 bg-paper px-4 py-3 text-sm focus:outline-none focus:border-ink transition-colors placeholder:text-ink/30"
           />
@@ -53,6 +82,8 @@ export default function NominationForm() {
         </label>
         <textarea
           rows={4}
+          value={waarom}
+          onChange={(e) => setWaarom(e.target.value)}
           placeholder="In één of twee zinnen — wat maakt dit boek de moeite van een avond waard?"
           className="w-full border border-ink/20 bg-paper px-4 py-3 text-sm focus:outline-none focus:border-ink transition-colors placeholder:text-ink/30 resize-none"
         />
@@ -127,12 +158,16 @@ export default function NominationForm() {
         <input
           type="email"
           required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           placeholder="naam@voorbeeld.nl"
           className="w-full border border-ink/20 bg-paper px-4 py-3 text-sm focus:outline-none focus:border-ink transition-colors placeholder:text-ink/30"
         />
       </div>
 
       {/* Footer */}
+      {error && <p className="text-[13px] text-terracotta">{error}</p>}
+
       <div className="border-t border-ink/12 pt-6 flex items-start justify-between gap-8">
         <p className="text-[11px] text-ink/45 leading-relaxed max-w-sm">
           Door te nomineren ga je akkoord met de huisregels van Tijdgeest.
@@ -141,9 +176,10 @@ export default function NominationForm() {
         </p>
         <button
           type="submit"
-          className="shrink-0 bg-ink text-paper text-xs font-black uppercase tracking-[0.12em] px-6 py-3.5 hover:bg-ink/85 transition-colors cursor-pointer"
+          disabled={loading}
+          className="shrink-0 bg-ink text-paper text-xs font-black uppercase tracking-[0.12em] px-6 py-3.5 hover:bg-ink/85 transition-colors cursor-pointer disabled:opacity-50"
         >
-          Nomineer deze titel
+          {loading ? "Verzenden…" : "Nomineer deze titel"}
         </button>
       </div>
 
