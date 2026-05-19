@@ -17,6 +17,7 @@ type OLResult = {
 
 const empty: WorkPayload = {
   originele_titel: "",
+  subtitel: null,
   auteur: "",
   jaar_eerste_publicatie: null,
   taal_origineel: null,
@@ -284,6 +285,15 @@ export default function WorkForm() {
                 value={fields.originele_titel}
                 onChange={(e) => setFields((f) => ({ ...f, originele_titel: e.target.value }))}
                 required
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <Label>Subtitel</Label>
+              <Input
+                value={fields.subtitel ?? ""}
+                onChange={field("subtitel")}
+                placeholder="Optionele subtitel"
               />
             </div>
 

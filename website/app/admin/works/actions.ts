@@ -7,12 +7,22 @@ import { revalidatePath } from "next/cache";
 
 export type WorkPayload = {
   originele_titel: string;
+  subtitel?: string | null;
   auteur: string;
   jaar_eerste_publicatie?: number | null;
   taal_origineel?: string | null;
   cover_image_url?: string | null;
   open_library_work_id?: string | null;
 };
+
+export async function updateWork(id: string, payload: WorkPayload) {
+  const supabase = await createClient();
+
+  const { error } = await supabase.from("works").update(payload).eq("id", id);
+  if (error) throw new Error(error.message);
+
+  redirect("/admin/works");
+}
 
 export async function deleteWork(id: string) {
   const supabase = await createClient();

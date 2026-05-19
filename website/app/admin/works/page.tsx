@@ -33,10 +33,10 @@ export default async function WorksPage() {
       {!works?.length ? (
         <p className="text-sm text-ink/40">Nog geen works toegevoegd.</p>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
           {works.map((w) => (
-            <div key={w.id} className="group">
-              <div className="relative aspect-[2/3] bg-krant overflow-hidden mb-2">
+            <div key={w.id} className="group border border-ink/10 bg-white flex flex-col p-3">
+              <div className="relative aspect-[2/3] bg-krant overflow-hidden">
                 {w.cover_image_url && (
                   <Image
                     src={w.cover_image_url}
@@ -46,12 +46,22 @@ export default async function WorksPage() {
                   />
                 )}
               </div>
-              <p className="text-xs font-black leading-tight">{w.originele_titel}</p>
-              <p className="text-[11px] text-ink/50 mt-0.5">{w.auteur}</p>
-              {w.jaar_eerste_publicatie && (
-                <p className="text-[11px] text-ink/40">{w.jaar_eerste_publicatie}</p>
-              )}
-              <DeleteButton id={w.id} titel={w.originele_titel} />
+              <div className="p-4 flex flex-col flex-1">
+                <p className="text-xs font-black leading-tight">{w.originele_titel}</p>
+                <p className="text-[11px] text-ink/50 mt-0.5">{w.auteur}</p>
+                {w.jaar_eerste_publicatie && (
+                  <p className="text-[11px] text-ink/40 mt-0.5">{w.jaar_eerste_publicatie}</p>
+                )}
+                <div className="flex flex-col gap-1.5 mt-auto pt-4 border-t border-ink/8">
+                  <Link
+                    href={`/admin/works/${w.id}/edit`}
+                    className="text-[10px] font-black uppercase tracking-widest text-ink/50 hover:text-ink transition-colors"
+                  >
+                    Bewerken
+                  </Link>
+                  <DeleteButton id={w.id} titel={w.originele_titel} />
+                </div>
+              </div>
             </div>
           ))}
         </div>
