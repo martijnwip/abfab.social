@@ -1,38 +1,6 @@
 import Image from "next/image";
 import Nav from "@/components/nav";
 
-const clubs = [
-  {
-    name: "De Late Lezers",
-    meta: "Fictie · Amsterdam",
-    photo: "photo-1524995997946-a1c2e315a42f",
-  },
-  {
-    name: "Stille Stemmen",
-    meta: "Poëzie · Utrecht",
-    photo: "photo-1507842217343-583bb7270b66",
-  },
-  {
-    name: "Mangelkalshering",
-    meta: "Non-fictie · Rotterdam",
-    photo: "photo-1512820790803-83ca734da794",
-  },
-  {
-    name: "Het Tweede Lezen",
-    meta: "Klassiekers · Den Haag",
-    photo: "photo-1456513080510-7bf3a84b82f8",
-  },
-  {
-    name: "Nachtboek",
-    meta: "Thriller · Amsterdam",
-    photo: "photo-1495640388908-05fa85288e61",
-  },
-  {
-    name: "Kleine Wonderen",
-    meta: "Verhalend · Haarlem",
-    photo: "photo-1521587760476-6c12a4b040da",
-  },
-];
 
 export default function HomePage() {
   return (
@@ -42,7 +10,7 @@ export default function HomePage() {
       {/* Hero tekst */}
       <section className="max-w-6xl mx-auto px-6 pt-10 md:pt-16">
         <p className="text-[10px] font-black uppercase tracking-[0.22em] text-ink/50 mb-8 md:mb-10">
-          De boeken van dit moment
+          Boeken veranderen hoe je kijkt
         </p>
         <h1 className="text-[42px] md:text-[76px] font-black leading-[0.95] tracking-[-0.025em] mb-6 md:mb-7 max-w-2xl">
           Lees samen,
@@ -50,24 +18,26 @@ export default function HomePage() {
           denk verder.
         </h1>
         <p className="text-[15px] leading-[1.55] text-ink/60 max-w-md mb-8">
-          Tijdgeest brengt nieuwsgierige lezers bij elkaar in kleine,
-          zorgvuldig samengestelde sessies. Eén boek per maand, één avond, één
-          gesprek dat je bijblijft.
+          Tijdgeest brengt lezers bij elkaar rond één boek. Een kleine groep,
+          een goede fles wijn, en een avond die verder gaat dan de samenvatting.
         </p>
-        <div className="flex gap-3 mb-12">
+        <div className="flex gap-3 mb-4 justify-center">
           <a
             href="/leesclubs"
             className="bg-terracotta text-paper text-xs font-black uppercase tracking-[0.12em] px-5 py-3.5 hover:bg-terracotta/90 transition-colors"
           >
-            Plan je leesclub
+            Registreer je
           </a>
           <a
             href="/over"
             className="border border-ink text-ink text-xs font-black uppercase tracking-[0.12em] px-5 py-3.5 hover:bg-ink hover:text-paper transition-colors"
           >
-            Meer over Tijdgeest
+            Bekijk de leeslijst
           </a>
         </div>
+        <p className="text-center text-[11px] text-muted mb-12 tracking-wide">
+          Kosteloos · Geen verplichtingen
+        </p>
       </section>
 
       {/* Hero afbeelding */}
@@ -92,7 +62,8 @@ export default function HomePage() {
       <section className="bg-terracotta text-paper py-10 md:py-14">
         <div className="max-w-3xl mx-auto px-6 text-center">
           <p className="text-[22px] md:text-[32px] font-medium italic leading-snug tracking-tight text-paper">
-            &ldquo;Think before you speak.<br className="hidden md:block" /> Read before you think.&rdquo;
+            &ldquo;Think before you speak.
+            <br className="hidden md:block" /> Read before you think.&rdquo;
           </p>
           <p className="mt-4 text-[11px] font-black uppercase tracking-[0.22em] text-paper/60">
             Fran Lebowitz
@@ -105,7 +76,7 @@ export default function HomePage() {
         {/* Boekkaart */}
         <div>
           <div className="inline-block bg-terracotta text-paper text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1.5 mb-5">
-            Aangeraden
+            Besproken in NRC
           </div>
           <div className="border border-ink/10 p-8 flex gap-7 bg-paper">
             <div className="relative w-28 shrink-0 aspect-[2/3] bg-krant overflow-hidden">
@@ -137,7 +108,7 @@ export default function HomePage() {
         {/* Boekbeschrijving */}
         <div className="pt-0 md:pt-12">
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-ink/50 mb-4">
-            Boek van de maand
+            We lezen nu
           </p>
           <h2 className="text-[36px] font-black tracking-tight leading-[1.05] mb-2">
             Het Einde
@@ -148,58 +119,104 @@ export default function HomePage() {
             Antonio Scurati
           </p>
           <p className="text-[15px] leading-[1.6] text-ink/65 mb-8">
-            Het derde deel in Scurati&apos;s M-trilogie — een documentaire
-            roman die het verhaal van Mussolini&apos;s regime vertelt op het
-            moment dat het begint te wankelen. Spannend, meeslepend en
-            onthullend actueel.
+            Het derde deel in Scurati&apos;s M-trilogie — een documentaire roman
+            die het verhaal van Mussolini&apos;s regime vertelt op het moment
+            dat het begint te wankelen. Spannend, meeslepend en onthullend
+            actueel.
           </p>
           <div className="flex gap-3">
             <a
-              href="#"
+              href="https://www.nrc.nl/nieuws/2026/03/17/antonio-scurati-laat-in-het-slotdeel-van-zijn-mussolini-cyclus-diens-geest-op-aarde-terugkeren-a4923206?utm_source=clipboard&utm_medium=clipboard&utm_campaign=share&utm_term=share-modal&gift_token=4923206~1779796678~DHTiBkTDRSeZnWtwrSEdlg~0zgO4CNiPYEGBZu0vVkMWqlKp3S2fQQxzxUK1I4XjNI"
+              target="_blank"
               className="bg-ink text-paper text-xs font-black uppercase tracking-[0.12em] px-5 py-3.5 hover:bg-ink/85 transition-colors"
             >
-              Bestel dit boek
+              Recensie in NRC →
             </a>
             <a
               href="#"
               className="border border-ink text-ink text-xs font-black uppercase tracking-[0.12em] px-5 py-3.5 hover:bg-ink hover:text-paper transition-colors"
             >
-              Lees de bespreking
+              Meld je aan
             </a>
           </div>
         </div>
       </section>
 
-      {/* Leesclubs */}
-      <section className="bg-krant/50 py-16">
+      {/* Formats */}
+      <section className="bg-krant/30 py-16">
         <div className="max-w-6xl mx-auto px-6">
-          <div className="flex items-baseline justify-between mb-8">
-            <h2 className="text-2xl font-black tracking-tight">
-              Onze leesclubs
-            </h2>
-            <a
-              href="/leesclubs"
-              className="text-xs font-black uppercase tracking-[0.15em] text-terracotta hover:underline"
-            >
-              Zie alle clubs →
-            </a>
+          <div className="flex items-start justify-between mb-8">
+            <div>
+              <h2 className="text-[42px] font-black tracking-tight leading-tight mb-3">
+                De formats
+              </h2>
+              <p className="text-[15px] text-ink/60 max-w-lg leading-relaxed">
+                Niet elke lezer leest hetzelfde, en niet elk boek vraagt om dezelfde avond.
+                Kies het ritme dat bij je past.
+              </p>
+            </div>
+            <p className="hidden md:block text-[10px] font-black uppercase tracking-[0.22em] text-ink/35 pt-2">
+              Drie manieren om mee te lezen
+            </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {clubs.map((club) => (
-              <a key={club.name} href="#" className="group block bg-paper">
+
+          <div className="grid grid-cols-1 md:grid-cols-3 border border-ink/12">
+            {[
+              {
+                photo: "photo-1481627834876-b7833e8f5570",
+                cat: "Fictie · Kort proza",
+                title: "In Één Ruk",
+                body: "Een novelle of kort verhaal dat je in één avond uitleest. Geen weken plannen, geen achterstand. Gewoon lezen, en de volgende dag erover praten.",
+                link: null,
+              },
+              {
+                photo: "photo-1485846234645-a62644f84728",
+                cat: "Fictie · Actueel",
+                title: "Boek & Film",
+                body: "Lees het boek voordat de film uitkomt. Daarna kijk je nooit meer hetzelfde.",
+                link: null,
+              },
+              {
+                photo: "photo-1521587760476-6c12a4b040da",
+                cat: "Jouw keuze · Op aanvraag",
+                title: "On Request",
+                body: "Welk boek wil jij bespreken? Geef een titel op. Zodra vier lezers zich aansluiten, plannen we een avond — bij jou in de buurt of online.",
+                link: { label: "Stel een titel voor →", href: "#" },
+              },
+            ].map((f, i) => (
+              <div key={f.title} className={`flex flex-col ${i < 2 ? "md:border-r border-ink/12" : ""}`}>
                 <div className="relative aspect-[4/3] overflow-hidden">
                   <Image
-                    src={`https://images.unsplash.com/${club.photo}?w=600&q=75`}
-                    alt={club.name}
+                    src={`https://images.unsplash.com/${f.photo}?w=600&q=75`}
+                    alt={f.title}
                     fill
-                    className="object-cover grayscale group-hover:scale-105 transition-transform duration-500"
+                    className="object-cover grayscale"
                   />
                 </div>
-                <div className="p-4 border-t border-ink/10">
-                  <h3 className="text-sm font-black">{club.name}</h3>
-                  <p className="text-[11px] text-ink/50 mt-0.5">{club.meta}</p>
+                <div className="p-7 flex flex-col flex-1 bg-paper border-t border-ink/12">
+                  <p className="text-[10px] font-black uppercase tracking-label text-ink/40 mb-3">
+                    {f.cat}
+                  </p>
+                  <h3 className="text-[28px] font-black tracking-tight leading-tight mb-4">
+                    {f.title}
+                  </h3>
+                  <p className="text-[14px] leading-[1.65] text-ink/60 flex-1">
+                    {f.body}
+                  </p>
+                  {f.link && (
+                    <>
+                      <div className="border-t border-ink/10 mt-6 pt-5">
+                        <a
+                          href={f.link.href}
+                          className="text-[13px] font-black text-terracotta hover:underline"
+                        >
+                          {f.link.label}
+                        </a>
+                      </div>
+                    </>
+                  )}
                 </div>
-              </a>
+              </div>
             ))}
           </div>
         </div>
