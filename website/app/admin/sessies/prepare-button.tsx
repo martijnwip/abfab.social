@@ -4,7 +4,7 @@ import { useState } from "react";
 
 export default function PrepareButton({ sessionId }: { sessionId: string }) {
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
-  const [result, setResult] = useState<unknown>(null);
+  const [result, setResult] = useState<Record<string, unknown> | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   async function handlePrepare() {
