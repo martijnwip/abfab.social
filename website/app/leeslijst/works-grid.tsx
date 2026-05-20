@@ -82,7 +82,7 @@ export default function WorksGrid({ works, allTags }: Props) {
             <button
               key={f.key ?? "all"}
               onClick={() => setActiveTag(f.key)}
-              className={`text-[11px] font-black uppercase tracking-[0.1em] px-4 py-2 border transition-colors cursor-pointer ${
+              className={`text-[11px] font-black uppercase tracking-widest px-4 py-2 border transition-colors cursor-pointer ${
                 active ? "bg-ink text-paper border-ink" : "border-ink/20 text-ink/60 hover:border-ink/50"
               }`}
             >
@@ -106,14 +106,14 @@ export default function WorksGrid({ works, allTags }: Props) {
               .sort((a, b) => new Date(a.datum).getTime() - new Date(b.datum).getTime())[0];
 
             return (
-              <div key={w.id} className="border border-ink/12 bg-white flex flex-col">
+              <Link key={w.id} href={`/leeslijst/${w.id}`} className="border border-ink/12 bg-white flex flex-col hover:shadow-md transition-shadow">
                 {/* Boek cover */}
                 <div className="bg-krant/40 p-5 pb-0">
                   <div className="flex items-center justify-between mb-4">
                     <div className="w-6 h-6 rounded-full bg-ink flex items-center justify-center">
                       <span className="text-[9px] font-black text-paper">T</span>
                     </div>
-                    <span className="text-[8px] font-black uppercase tracking-[0.2em] text-ink/40">
+                    <span className="text-[8px] font-black uppercase tracking-label text-ink/40">
                       Tijdgeest
                     </span>
                   </div>
@@ -123,7 +123,7 @@ export default function WorksGrid({ works, allTags }: Props) {
                     <p className="text-[11px] text-ink/50 leading-snug mb-3">{w.subtitel}</p>
                   )}
                   {/* Cover afbeelding */}
-                  <div className="relative aspect-[3/2] overflow-hidden mt-3">
+                  <div className="relative aspect-3/2 overflow-hidden mt-3">
                     {w.cover_image_url ? (
                       <Image src={w.cover_image_url} alt={w.originele_titel} fill className="object-cover" />
                     ) : (
@@ -169,14 +169,14 @@ export default function WorksGrid({ works, allTags }: Props) {
                       <div className="border-t border-ink/10 mt-auto pt-4">
                         <p className="text-[9px] font-black uppercase tracking-[0.18em] text-ink/40 mb-1">Avond</p>
                         <p className="text-[13px] text-ink/70">{formatDate(nextSession.datum)} · 20:00</p>
-                        <Link href="#" className="text-[12px] font-black text-ink underline mt-2 inline-block hover:text-terracotta transition-colors">
+                        <span className="text-[12px] font-black text-ink underline mt-2 inline-block">
                           Doe mee →
-                        </Link>
+                        </span>
                       </div>
                     </>
                   )}
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>
