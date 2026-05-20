@@ -13,6 +13,7 @@
   /* Typografie */
   --font-sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+  --font-editorial: var(--font-editorial), 'Times New Roman', serif;
 
   /* Tracking */
   --tracking-display: -0.025em;

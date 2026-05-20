@@ -115,7 +115,7 @@ export default function OnRequestPage() {
 
       {/* Onze voorbereiding */}
       <section className="py-16">
-        <div className="max-w-4xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
+        <div className="max-w-4xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-start">
 
           {/* Links */}
           <div>
@@ -146,7 +146,7 @@ export default function OnRequestPage() {
               { label: "Gesprekskaart",          value: "Vier tot vijf vragen, gestuurd één week voor de avond." },
               { label: "Begeleider",             value: "Optioneel — een ervaren lezer modereert het gesprek." },
             ].map((row) => (
-              <div key={row.label} className="grid grid-cols-[160px_1fr] gap-6 py-5 border-b border-ink/12 first:border-t first:border-ink/12">
+              <div key={row.label} className="flex flex-col sm:grid sm:grid-cols-[160px_1fr] sm:gap-6 gap-1.5 py-5 border-b border-ink/12 first:border-t first:border-ink/12">
                 <p className="text-[10px] font-black uppercase tracking-[0.16em] text-ink/70 whitespace-pre-line leading-relaxed">
                   {row.label}
                 </p>
@@ -161,7 +161,7 @@ export default function OnRequestPage() {
 
       {/* Nominatieformulier */}
       <section className="bg-terracotta py-16 px-6">
-        <div className="max-w-2xl mx-auto bg-paper px-10 py-12">
+        <div className="max-w-2xl mx-auto bg-paper px-5 py-8 sm:px-10 sm:py-12">
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-ink/40 mb-4">
             Nomineer een titel
           </p>

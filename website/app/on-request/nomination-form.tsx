@@ -14,7 +14,7 @@ export default function NominationForm() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     setError(null);
@@ -121,7 +121,7 @@ export default function NominationForm() {
           <label className="block text-[10px] font-black uppercase tracking-[0.18em] text-ink/50 mb-3">
             Voorkeur locatie
           </label>
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             {[
               { value: "buurt" as const, label: "Bij mij in de buurt" },
               { value: "online" as const, label: "Online · Zoom" },
@@ -130,7 +130,7 @@ export default function NominationForm() {
                 key={opt.value}
                 type="button"
                 onClick={() => setLocatie(opt.value)}
-                className={`flex items-center gap-2.5 px-4 py-3 border text-sm transition-colors cursor-pointer ${
+                className={`flex items-center gap-2.5 px-4 py-3 border text-sm transition-colors cursor-pointer text-left ${
                   locatie === opt.value
                     ? "border-ink text-ink"
                     : "border-ink/20 text-ink/50 hover:border-ink/50"
@@ -168,8 +168,8 @@ export default function NominationForm() {
       {/* Footer */}
       {error && <p className="text-[13px] text-terracotta">{error}</p>}
 
-      <div className="border-t border-ink/12 pt-6 flex items-start justify-between gap-8">
-        <p className="text-[11px] text-ink/45 leading-relaxed max-w-sm">
+      <div className="border-t border-ink/12 pt-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-5">
+        <p className="text-[11px] text-ink/45 leading-relaxed">
           Door te nomineren ga je akkoord met de huisregels van Tijdgeest.
           Je voorstel is niet bindend — pas als de kring vol is en jij bevestigt,
           gaat de avond door.
@@ -177,7 +177,7 @@ export default function NominationForm() {
         <button
           type="submit"
           disabled={loading}
-          className="shrink-0 bg-ink text-paper text-xs font-black uppercase tracking-[0.12em] px-6 py-3.5 hover:bg-ink/85 transition-colors cursor-pointer disabled:opacity-50"
+          className="w-full sm:w-auto shrink-0 bg-ink text-paper text-xs font-black uppercase tracking-[0.12em] px-6 py-3.5 hover:bg-ink/85 transition-colors cursor-pointer disabled:opacity-50"
         >
           {loading ? "Verzenden…" : "Nomineer deze titel"}
         </button>
