@@ -4,6 +4,7 @@ import { useState, useTransition, useRef } from "react";
 import Image from "next/image";
 import { updateWork, uploadCover, type WorkPayload } from "../../actions";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import TagSelector from "../../tag-selector";
 
 type Work = {
   id: string;
@@ -16,7 +17,7 @@ type Work = {
   open_library_work_id: string | null;
 };
 
-export default function EditWorkForm({ work }: { work: Work }) {
+export default function EditWorkForm({ work, availableTags }: { work: Work; availableTags: string[] }) {
   const [fields, setFields] = useState<WorkPayload>({
     originele_titel:       work.originele_titel,
     subtitel:              work.subtitel,
@@ -25,6 +26,7 @@ export default function EditWorkForm({ work }: { work: Work }) {
     taal_origineel:        work.taal_origineel,
     cover_image_url:       work.cover_image_url,
     open_library_work_id:  work.open_library_work_id,
+    tags:                  (work as any).tags ?? [],
   });
 
   const [coverPreview, setCoverPreview] = useState<string | null>(work.cover_image_url);
@@ -146,6 +148,15 @@ export default function EditWorkForm({ work }: { work: Work }) {
           <Label>Open Library Work ID</Label>
           <Input value={fields.open_library_work_id ?? ""} onChange={field("open_library_work_id")} placeholder="bijv. OL82563W" className="font-mono" />
         </div>
+      </div>
+
+      <div>
+        <label className="block text-[10px] font-black uppercase tracking-[0.18em] text-ink/50 mb-2">Tags</label>
+        <TagSelector
+          tags={availableTags}
+          selected={fields.tags ?? []}
+          onChange={(tags) => setFields((f) => ({ ...f, tags }))}
+        />
       </div>
 
       {error && <p className="text-[13px] text-terracotta">{error}</p>}

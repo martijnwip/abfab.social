@@ -3,6 +3,7 @@
 import { useState, useTransition, useRef } from "react";
 import Image from "next/image";
 import { createWork, uploadCover, type WorkPayload } from "../actions";
+import TagSelector from "../tag-selector";
 
 type Mode = "search" | "manual";
 
@@ -23,9 +24,10 @@ const empty: WorkPayload = {
   taal_origineel: null,
   cover_image_url: null,
   open_library_work_id: null,
+  tags: [],
 };
 
-export default function WorkForm() {
+export default function WorkForm({ availableTags }: { availableTags: string[] }) {
   const [mode, setMode] = useState<Mode>("search");
 
   // Search state
@@ -239,7 +241,7 @@ export default function WorkForm() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {/* Cover preview + upload */}
             <div className="sm:col-span-2 flex items-start gap-6">
-              <div className="w-24 shrink-0 aspect-[2/3] bg-krant overflow-hidden relative">
+              <div className="w-24 shrink-0 aspect-2/3 bg-krant overflow-hidden relative">
                 {coverPreview ? (
                   <Image src={coverPreview} alt="Cover" fill className="object-cover" />
                 ) : (
@@ -336,6 +338,15 @@ export default function WorkForm() {
                 />
               </div>
             )}
+          </div>
+
+          <div className="sm:col-span-2">
+            <Label>Tags</Label>
+            <TagSelector
+              tags={availableTags}
+              selected={fields.tags ?? []}
+              onChange={(tags) => setFields((f) => ({ ...f, tags }))}
+            />
           </div>
 
           {error && (

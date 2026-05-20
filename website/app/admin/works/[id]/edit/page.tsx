@@ -6,13 +6,14 @@ export default async function EditWorkPage({ params }: { params: Promise<{ id: s
   const { id } = await params;
   const supabase = await createClient();
 
-  const { data: work } = await supabase
-    .from("works")
-    .select("*")
-    .eq("id", id)
-    .single();
+  const [{ data: work }, { data: tags }] = await Promise.all([
+    supabase.from("works").select("*").eq("id", id).single(),
+    supabase.from("tags").select("naam").order("naam"),
+  ]);
 
   if (!work) notFound();
+
+  const tagNames = tags?.map((t) => t.naam) ?? [];
 
   return (
     <main className="max-w-6xl mx-auto px-6 py-12">
@@ -22,7 +23,7 @@ export default async function EditWorkPage({ params }: { params: Promise<{ id: s
       <h1 className="text-[36px] font-black tracking-tight leading-tight mb-10">
         Work bewerken
       </h1>
-      <EditWorkForm work={work} />
+      <EditWorkForm work={work} availableTags={tagNames} />
     </main>
   );
 }

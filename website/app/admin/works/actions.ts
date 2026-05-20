@@ -13,6 +13,7 @@ export type WorkPayload = {
   taal_origineel?: string | null;
   cover_image_url?: string | null;
   open_library_work_id?: string | null;
+  tags?: string[];
 };
 
 export async function updateWork(id: string, payload: WorkPayload) {

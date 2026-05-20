@@ -143,7 +143,7 @@ export default function HomePage() {
       </section>
 
       {/* Formats */}
-      <section className="bg-krant/30 py-16">
+      <section id="formats" className="bg-krant/30 py-16">
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex items-start justify-between mb-8">
             <div>

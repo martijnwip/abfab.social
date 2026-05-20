@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 const navItems = [
   { label: "Leden",    href: "/admin" },
   { label: "Works",    href: "/admin/works" },
+  { label: "Tags",     href: "/admin/tags" },
   { label: "Sessies",  href: "/admin/sessies" },
 ];
 
@@ -16,7 +17,7 @@ export default function AdminNav({ email }: { email: string }) {
     <nav className="bg-ink text-paper">
       <div className="max-w-6xl mx-auto px-6 h-12 flex items-center justify-between">
         <div className="flex items-center gap-8">
-          <span className="text-[11px] font-black uppercase tracking-[0.2em] text-paper/40">
+          <span className="text-[11px] font-black uppercase tracking-label text-paper/40">
             Admin
           </span>
           <div className="flex items-center gap-6">
