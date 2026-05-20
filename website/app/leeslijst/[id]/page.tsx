@@ -5,6 +5,7 @@ import Nav from "@/components/nav";
 import { createClient } from "@/lib/supabase/server";
 import InterestForm from "./interest-form";
 import SessionSignup from "./session-signup";
+import { createServiceClient } from "@/lib/supabase/service";
 
 function sessionStatus(sessions: { datum: string }[]): "nu" | "binnenkort" | null {
   const now = new Date();
@@ -44,7 +45,23 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ id:
     : { count: 0 };
 
   const { data: { user } } = await supabase.auth.getUser();
+
+  // Admin check via service client (bypast RLS)
+  const service = createServiceClient();
+  const isAdmin = user
+    ? await service
+        .from("members")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .eq("status", "approved")
+        .single()
+        .then(({ data }) => !!data)
+    : false;
+
   const firstTag = work.tags?.[0] ?? null;
+  const gesprekskaart: { vraag: string; toelichting: string }[] = work.gesprekskaart ?? [];
+
 
   return (
     <>
@@ -254,6 +271,44 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ id:
             </div>
           </div>
         </section>
+        {/* Gesprekskaart — alleen zichtbaar voor admins */}
+        {isAdmin && gesprekskaart.length > 0 && (
+          <section className="mt-20 pt-16 border-t border-ink/12">
+            <div className="flex gap-10 items-start">
+              <div className="w-36 shrink-0 hidden md:block pt-1">
+                <p className="text-[11px] font-black text-ink/40 mb-2">II.</p>
+                <div className="border-t border-ink/20 pt-2">
+                  <p className="text-[9px] font-black uppercase tracking-label text-ink/40">
+                    Gesprekskaart
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-3 mb-8">
+                  <h2 className="font-editorial text-[36px] leading-none tracking-[-0.02em]">
+                    Gesprekskaart
+                  </h2>
+                  <span className="text-[9px] font-black uppercase tracking-widest bg-terracotta/15 text-terracotta px-2.5 py-1">
+                    Admin
+                  </span>
+                </div>
+
+                <ol className="space-y-6">
+                  {gesprekskaart.map((item, i) => (
+                    <li key={i} className="grid grid-cols-[24px_1fr] gap-4">
+                      <span className="text-[11px] font-black text-terracotta pt-0.5">{i + 1}.</span>
+                      <div>
+                        <p className="text-[15px] font-black leading-snug mb-1.5">{item.vraag}</p>
+                        <p className="text-[13px] text-ink/55 leading-relaxed">{item.toelichting}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </div>
+          </section>
+        )}
       </main>
     </>
   );

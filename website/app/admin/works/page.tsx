@@ -2,13 +2,14 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import Image from "next/image";
 import DeleteButton from "./delete-button";
+import GesprekskaartButton from "./gesprekskaart-button";
 
 export default async function WorksPage() {
   const supabase = await createClient();
 
   const { data: works } = await supabase
     .from("works")
-    .select("id, originele_titel, auteur, jaar_eerste_publicatie, cover_image_url")
+    .select("id, originele_titel, auteur, jaar_eerste_publicatie, cover_image_url, gesprekskaart")
     .order("created_at", { ascending: false });
 
   return (
@@ -53,6 +54,12 @@ export default async function WorksPage() {
                   <p className="text-[11px] text-ink/40 mt-0.5">{w.jaar_eerste_publicatie}</p>
                 )}
                 <div className="flex flex-col gap-1.5 mt-auto pt-4 border-t border-ink/8">
+                  {w.gesprekskaart && (
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-seafoam shrink-0" />
+                      <span className="text-[10px] text-ink/40 font-medium">Gesprekskaart</span>
+                    </div>
+                  )}
                   <Link
                     href={`/admin/works/${w.id}/edit`}
                     className="text-[10px] font-black uppercase tracking-widest text-ink/50 hover:text-ink transition-colors"
@@ -60,6 +67,11 @@ export default async function WorksPage() {
                     Bewerken
                   </Link>
                   <DeleteButton id={w.id} titel={w.originele_titel} />
+                  <GesprekskaartButton
+                    workId={w.id}
+                    titel={w.originele_titel}
+                    hasKaart={!!w.gesprekskaart}
+                  />
                 </div>
               </div>
             </div>
