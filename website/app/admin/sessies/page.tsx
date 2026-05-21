@@ -1,7 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
-import PrepareButton from "./prepare-button";
-
 async function createSession(formData: FormData) {
   "use server";
   const supabase = await (await import("@/lib/supabase/server")).createClient();
@@ -20,7 +18,7 @@ export default async function SessiesPage() {
   const [{ data: sessions }, { data: works }] = await Promise.all([
     supabase
       .from("book_sessions")
-      .select("id, datum, locatie, voertaal, session_prep, works(originele_titel, auteur)")
+      .select("id, datum, locatie, voertaal, works(originele_titel, auteur)")
       .order("datum", { ascending: false }),
     supabase
       .from("works")
@@ -100,7 +98,6 @@ export default async function SessiesPage() {
             <div className="space-y-5">
               {sessions.map((s) => {
                 const work = (s as unknown as { works: { originele_titel: string; auteur: string } }).works;
-                const hasPrep = !!s.session_prep;
                 return (
                   <div key={s.id} className="border border-ink/12 bg-white p-6 space-y-4">
                     <div className="flex items-start justify-between gap-4">
@@ -114,13 +111,7 @@ export default async function SessiesPage() {
                           {s.locatie && ` · ${s.locatie}`}
                         </p>
                       </div>
-                      {hasPrep && (
-                        <span className="text-[9px] font-black uppercase tracking-widest bg-seafoam/30 text-ink px-2.5 py-1 shrink-0">
-                          Voorbereid
-                        </span>
-                      )}
-                    </div>
-                    <PrepareButton sessionId={s.id} />
+                      </div>
                   </div>
                 );
               })}
