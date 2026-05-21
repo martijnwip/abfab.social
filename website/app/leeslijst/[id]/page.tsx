@@ -5,6 +5,7 @@ import Nav from "@/components/nav";
 import { createClient } from "@/lib/supabase/server";
 import InterestForm from "./interest-form";
 import SessionSignup from "./session-signup";
+import GesprekskaartReveal from "./gesprekskaart-reveal";
 
 function sessionStatus(sessions: { datum: string }[]): "nu" | "binnenkort" | null {
   const now = new Date();
@@ -28,7 +29,7 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ id:
 
   const { data: sessions } = await supabase
     .from("book_sessions")
-    .select("id, datum, locatie")
+    .select("id, datum, tijdstip, locatie")
     .eq("work_id", id)
     .order("datum", { ascending: true });
 
@@ -45,6 +46,28 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ id:
 
   const { data: { user } } = await supabase.auth.getUser();
 
+  // Controleer of de ingelogde member zich heeft aangemeld voor de volgende sessie
+  let memberIsSignedUp = false;
+  if (user && nextSession) {
+    const { data: member } = await supabase
+      .from("members")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("status", "approved")
+      .single();
+
+    if (member) {
+      const { data: signup } = await supabase
+        .from("session_signups")
+        .select("id")
+        .eq("session_id", nextSession.id)
+        .eq("member_id", member.id)
+        .single();
+      memberIsSignedUp = !!signup;
+    }
+  }
+
+  const gesprekskaart: { vraag: string; toelichting: string }[] = work.gesprekskaart ?? [];
   const firstTag = work.tags?.[0] ?? null;
 
 
@@ -210,7 +233,7 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ id:
                       <p className="font-editorial text-[28px] leading-none">
                         {new Date(nextSession.datum).toLocaleDateString("nl-NL", {
                           weekday: "short", day: "numeric", month: "long",
-                        })} · 20:00
+                        })} · {((nextSession as { tijdstip?: string }).tijdstip ?? "20:00").slice(0, 5)}
                       </p>
                     </div>
                     {nextSession.locatie && (
@@ -241,6 +264,13 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ id:
                     </div>
                     <SessionSignup sessionId={nextSession.id} workId={id} />
                   </div>
+
+                  {/* Gesprekskaart — alleen voor aangemelde members */}
+                  {memberIsSignedUp && gesprekskaart.length > 0 && (
+                    <div className="border-t border-ink/10 pt-6 mt-2">
+                      <GesprekskaartReveal items={gesprekskaart} />
+                    </div>
+                  )}
                 </div>
               ) : (
                 /* Zonder sessie */

@@ -7,6 +7,7 @@ import Link from "next/link";
 type Session = {
   id: string;
   datum: string;
+  tijdstip?: string | null;
   locatie: string | null;
 };
 
@@ -168,7 +169,7 @@ export default function WorksGrid({ works, allTags }: Props) {
                     <>
                       <div className="border-t border-ink/10 mt-auto pt-4">
                         <p className="text-[9px] font-black uppercase tracking-[0.18em] text-ink/40 mb-1">Avond</p>
-                        <p className="text-[13px] text-ink/70">{formatDate(nextSession.datum)} · 20:00</p>
+                        <p className="text-[13px] text-ink/70">{formatDate(nextSession.datum)} · {(nextSession.tijdstip ?? "20:00").slice(0, 5)}</p>
                         <span className="text-[12px] font-black text-ink underline mt-2 inline-block">
                           Doe mee →
                         </span>

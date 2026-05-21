@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import Link from "next/link";
 async function createSession(formData: FormData) {
   "use server";
   const supabase = await (await import("@/lib/supabase/server")).createClient();
@@ -99,7 +100,7 @@ export default async function SessiesPage() {
               {sessions.map((s) => {
                 const work = (s as unknown as { works: { originele_titel: string; auteur: string } }).works;
                 return (
-                  <div key={s.id} className="border border-ink/12 bg-white p-6 space-y-4">
+                  <div key={s.id} className="border border-ink/12 bg-white p-6">
                     <div className="flex items-start justify-between gap-4">
                       <div>
                         <p className="font-black text-[15px]">{work?.originele_titel}</p>
@@ -111,7 +112,13 @@ export default async function SessiesPage() {
                           {s.locatie && ` · ${s.locatie}`}
                         </p>
                       </div>
-                      </div>
+                      <Link
+                        href={`/admin/sessies/${s.id}`}
+                        className="shrink-0 text-[10px] font-black uppercase tracking-widest text-ink/50 hover:text-ink transition-colors"
+                      >
+                        Bewerken →
+                      </Link>
+                    </div>
                   </div>
                 );
               })}

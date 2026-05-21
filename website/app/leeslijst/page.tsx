@@ -17,7 +17,7 @@ export default async function LeeslijstPage() {
     supabase.from("tags").select("naam").order("naam"),
     supabase
       .from("book_sessions")
-      .select("id, work_id, datum, locatie")
+      .select("id, work_id, datum, tijdstip, locatie")
       .order("datum", { ascending: true }),
   ]);
 
