@@ -7,10 +7,15 @@ import RemoveSignupButton from "./remove-signup-button";
 async function updateSessie(formData: FormData) {
   "use server";
   const id = formData.get("session_id") as string;
-  const datum = formData.get("datum") as string;
-  const tijdstip = formData.get("tijdstip") as string;
   const supabase = await (await import("@/lib/supabase/server")).createClient();
-  await supabase.from("book_sessions").update({ datum, tijdstip }).eq("id", id);
+  await supabase.from("book_sessions").update({
+    datum: formData.get("datum") as string,
+    tijdstip: formData.get("tijdstip") as string,
+    eindtijd: (formData.get("eindtijd") as string) || null,
+    locatie: (formData.get("locatie") as string) || null,
+    notitie: (formData.get("notitie") as string) || null,
+    max_deelnemers: parseInt(formData.get("max_deelnemers") as string) || 12,
+  }).eq("id", id);
   revalidatePath(`/admin/sessies/${id}`);
 }
 
@@ -21,15 +26,21 @@ export default async function SessieDetailPage({ params }: { params: Promise<{ i
 
   const { data: session } = await supabase
     .from("book_sessions")
-    .select("id, datum, tijdstip, locatie, works(id, originele_titel, auteur, gesprekskaart)")
+    .select("id, datum, tijdstip, eindtijd, locatie, notitie, max_deelnemers, works(id, originele_titel, auteur, gesprekskaart)")
     .eq("id", id)
     .single();
 
   if (!session) notFound();
 
-  const work = (session as unknown as {
+  const sessionData = session as unknown as {
+    tijdstip?: string;
+    eindtijd?: string;
+    locatie?: string | null;
+    notitie?: string | null;
+    max_deelnemers?: number;
     works: { id: string; originele_titel: string; auteur: string; gesprekskaart: { vraag: string; toelichting: string }[] | null }
-  }).works;
+  };
+  const work = sessionData.works;
 
   // Signups ophalen
   const { data: signups } = await supabase
@@ -102,6 +113,7 @@ export default async function SessieDetailPage({ params }: { params: Promise<{ i
             </p>
             <form action={updateSessie} className="space-y-3">
               <input type="hidden" name="session_id" value={id} />
+
               <div>
                 <label className="block text-[10px] font-black uppercase tracking-[0.16em] text-ink/40 mb-1.5">Datum</label>
                 <input
@@ -111,18 +123,64 @@ export default async function SessieDetailPage({ params }: { params: Promise<{ i
                   className="w-full border border-ink/20 bg-paper px-4 py-2.5 text-sm focus:outline-none focus:border-ink transition-colors"
                 />
               </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-[10px] font-black uppercase tracking-[0.16em] text-ink/40 mb-1.5">Begintijd</label>
+                  <input
+                    name="tijdstip"
+                    type="time"
+                    defaultValue={(sessionData.tijdstip ?? "20:00").slice(0, 5)}
+                    step="60"
+                    className="w-full border border-ink/20 bg-paper px-4 py-2.5 text-sm focus:outline-none focus:border-ink transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black uppercase tracking-[0.16em] text-ink/40 mb-1.5">Eindtijd</label>
+                  <input
+                    name="eindtijd"
+                    type="time"
+                    defaultValue={sessionData.eindtijd ? sessionData.eindtijd.slice(0, 5) : ""}
+                    step="60"
+                    className="w-full border border-ink/20 bg-paper px-4 py-2.5 text-sm focus:outline-none focus:border-ink transition-colors"
+                  />
+                </div>
+              </div>
+
               <div>
-                <label className="block text-[10px] font-black uppercase tracking-[0.16em] text-ink/40 mb-1.5">Tijdstip</label>
+                <label className="block text-[10px] font-black uppercase tracking-[0.16em] text-ink/40 mb-1.5">Locatie</label>
                 <input
-                  name="tijdstip"
-                  type="time"
-                  defaultValue={(session as { tijdstip?: string }).tijdstip ?? "20:00"}
+                  name="locatie"
+                  type="text"
+                  defaultValue={sessionData.locatie ?? ""}
+                  placeholder="bijv. Café De Jaren, Amsterdam"
                   className="w-full border border-ink/20 bg-paper px-4 py-2.5 text-sm focus:outline-none focus:border-ink transition-colors"
                 />
               </div>
-              {session.locatie && (
-                <p className="text-[12px] text-ink/45">{session.locatie}</p>
-              )}
+
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-[0.16em] text-ink/40 mb-1.5">Max. deelnemers</label>
+                <input
+                  name="max_deelnemers"
+                  type="number"
+                  defaultValue={sessionData.max_deelnemers ?? 12}
+                  min="1"
+                  max="100"
+                  className="w-full border border-ink/20 bg-paper px-4 py-2.5 text-sm focus:outline-none focus:border-ink transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-[0.16em] text-ink/40 mb-1.5">Notitie</label>
+                <textarea
+                  name="notitie"
+                  rows={2}
+                  defaultValue={sessionData.notitie ?? ""}
+                  placeholder="bijv. Slotavond van de M-cyclus."
+                  className="w-full border border-ink/20 bg-paper px-4 py-2.5 text-sm focus:outline-none focus:border-ink transition-colors resize-none"
+                />
+              </div>
+
               <button
                 type="submit"
                 className="w-full bg-ink text-paper text-xs font-black uppercase tracking-[0.12em] py-2.5 hover:bg-ink/85 transition-colors cursor-pointer"
