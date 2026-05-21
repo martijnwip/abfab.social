@@ -34,11 +34,22 @@ export async function deleteWork(id: string) {
   revalidatePath("/admin/works");
 }
 
-export async function createWork(payload: WorkPayload) {
+export async function createWork(payload: WorkPayload, nominationId?: string) {
   const supabase = await createClient();
 
-  const { error } = await supabase.from("works").insert(payload);
+  const { data: work, error } = await supabase
+    .from("works")
+    .insert(payload)
+    .select("id")
+    .single();
   if (error) throw new Error(error.message);
+
+  if (nominationId && work) {
+    await supabase
+      .from("nominations")
+      .update({ status: "approved", work_id: work.id })
+      .eq("id", nominationId);
+  }
 
   redirect("/admin/works");
 }

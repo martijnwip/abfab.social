@@ -16,6 +16,8 @@ type OLResult = {
   cover_i?: number;
 };
 
+type Nomination = { id: string; titel: string; auteur: string; waarom: string; nominatorEmail: string | null };
+
 const empty: WorkPayload = {
   originele_titel: "",
   subtitel: null,
@@ -27,8 +29,14 @@ const empty: WorkPayload = {
   tags: [],
 };
 
-export default function WorkForm({ availableTags }: { availableTags: string[] }) {
-  const [mode, setMode] = useState<Mode>("search");
+export default function WorkForm({
+  availableTags,
+  nomination,
+}: {
+  availableTags: string[];
+  nomination?: Nomination | null;
+}) {
+  const [mode, setMode] = useState<Mode>(nomination ? "manual" : "search");
 
   // Search state
   const [query, setQuery] = useState("");
@@ -37,7 +45,11 @@ export default function WorkForm({ availableTags }: { availableTags: string[] })
   const [selected, setSelected] = useState<OLResult | null>(null);
 
   // Form state
-  const [fields, setFields] = useState<WorkPayload>(empty);
+  const [fields, setFields] = useState<WorkPayload>(
+    nomination
+      ? { ...empty, originele_titel: nomination.titel, auteur: nomination.auteur, tags: ["On Request"] }
+      : empty
+  );
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);
 
@@ -112,13 +124,16 @@ export default function WorkForm({ availableTags }: { availableTags: string[] })
           coverUrl = await uploadCover(fd);
         }
 
-        await createWork({
-          ...fields,
-          jaar_eerste_publicatie: fields.jaar_eerste_publicatie
-            ? Number(fields.jaar_eerste_publicatie)
-            : null,
-          cover_image_url: coverUrl,
-        });
+        await createWork(
+          {
+            ...fields,
+            jaar_eerste_publicatie: fields.jaar_eerste_publicatie
+              ? Number(fields.jaar_eerste_publicatie)
+              : null,
+            cover_image_url: coverUrl,
+          },
+          nomination?.id
+        );
       } catch (err) {
         setError(err instanceof Error ? err.message : "Er ging iets mis.");
       }
@@ -216,6 +231,34 @@ export default function WorkForm({ availableTags }: { availableTags: string[] })
 
           {results.length === 0 && !searching && query && (
             <p className="text-sm text-ink/40">Geen resultaten gevonden.</p>
+          )}
+        </div>
+      )}
+
+      {/* Motivatie van het lid */}
+      {nomination && (
+        <div className="border border-terracotta/30 bg-terracotta/5 p-5 mb-6 space-y-4">
+          <div className="flex items-center gap-2.5">
+            <span className="w-2 h-2 rounded-full bg-terracotta shrink-0" />
+            <p className="text-[9px] font-black uppercase tracking-[0.18em] text-ink/60">
+              Nominatie
+            </p>
+          </div>
+
+          {nomination.nominatorEmail && (
+            <div>
+              <p className="text-[9px] font-black uppercase tracking-[0.18em] text-ink/40 mb-1">Ingediend door</p>
+              <p className="text-[13px] text-ink/70">{nomination.nominatorEmail}</p>
+            </div>
+          )}
+
+          {nomination.waarom && (
+            <div>
+              <p className="text-[9px] font-black uppercase tracking-[0.18em] text-ink/40 mb-1.5">Motivatie</p>
+              <p className="text-[13px] text-ink/65 italic leading-relaxed border-l-2 border-terracotta pl-4">
+                &ldquo;{nomination.waarom}&rdquo;
+              </p>
+            </div>
           )}
         </div>
       )}

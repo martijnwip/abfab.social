@@ -181,7 +181,7 @@ export default function HomePage() {
                 cat: "Jouw keuze · Op aanvraag",
                 title: "On Request",
                 body: "Welk boek wil jij bespreken? Geef een titel op. Zodra vier lezers zich aansluiten, plannen we een avond — bij jou in de buurt of online.",
-                link: { label: "Stel een titel voor →", href: "#" },
+                link: { label: "Stel een titel voor →", href: "/on-request" },
               },
             ].map((f, i) => (
               <div key={f.title} className={`flex flex-col ${i < 2 ? "md:border-r border-ink/12" : ""}`}>

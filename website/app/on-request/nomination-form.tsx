@@ -3,13 +3,12 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
-export default function NominationForm() {
+export default function NominationForm({ memberId }: { memberId: string }) {
   const [count, setCount] = useState(4);
   const [locatie, setLocatie] = useState<"buurt" | "online">("buurt");
   const [titel, setTitel] = useState("");
   const [auteur, setAuteur] = useState("");
   const [waarom, setWaarom] = useState("");
-  const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -26,7 +25,7 @@ export default function NominationForm() {
       waarom: waarom || null,
       aantal_medelezers: count,
       voorkeur_locatie: locatie,
-      email,
+      member_id: memberId,
     });
 
     if (error) {
@@ -49,52 +48,51 @@ export default function NominationForm() {
     );
   }
 
+  const inputClass = "w-full border border-ink/20 bg-paper px-4 py-3 text-sm focus:outline-none focus:border-ink transition-colors placeholder:text-ink/30";
+  const labelClass = "block text-[10px] font-black uppercase tracking-[0.18em] text-ink/50 mb-2";
+
   return (
     <form onSubmit={handleSubmit} className="space-y-7">
 
       {/* Titel + Auteur */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div>
-          <label className="block text-[10px] font-black uppercase tracking-[0.18em] text-ink/50 mb-2">Titel</label>
+          <label className={labelClass}>Titel</label>
           <input
             required
             value={titel}
             onChange={(e) => setTitel(e.target.value)}
-            placeholder="bv. Tegen de natuur"
-            className="w-full border border-ink/20 bg-paper px-4 py-3 text-sm focus:outline-none focus:border-ink transition-colors placeholder:text-ink/30"
+            placeholder="bv. Joe Speedboat"
+            className={inputClass}
           />
         </div>
         <div>
-          <label className="block text-[10px] font-black uppercase tracking-[0.18em] text-ink/50 mb-2">Auteur</label>
+          <label className={labelClass}>Auteur</label>
           <input
             value={auteur}
             onChange={(e) => setAuteur(e.target.value)}
             placeholder="bv. Tommy Wieringa"
-            className="w-full border border-ink/20 bg-paper px-4 py-3 text-sm focus:outline-none focus:border-ink transition-colors placeholder:text-ink/30"
+            className={inputClass}
           />
         </div>
       </div>
 
       {/* Waarom */}
       <div>
-        <label className="block text-[10px] font-black uppercase tracking-[0.18em] text-ink/50 mb-2">
-          Waarom dit boek? (optioneel)
-        </label>
+        <label className={labelClass}>Waarom dit boek? (optioneel)</label>
         <textarea
           rows={4}
           value={waarom}
           onChange={(e) => setWaarom(e.target.value)}
           placeholder="In één of twee zinnen — wat maakt dit boek de moeite van een avond waard?"
-          className="w-full border border-ink/20 bg-paper px-4 py-3 text-sm focus:outline-none focus:border-ink transition-colors placeholder:text-ink/30 resize-none"
+          className={`${inputClass} resize-none`}
         />
       </div>
 
       {/* Aantal + Locatie */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 items-start">
         <div>
-          <label className="block text-[10px] font-black uppercase tracking-[0.18em] text-ink/50 mb-3">
-            Aantal medelezers (min. 4)
-          </label>
+          <label className={`${labelClass} mb-3`}>Aantal medelezers (min. 4)</label>
           <div className="flex items-center">
             <button
               type="button"
@@ -118,10 +116,8 @@ export default function NominationForm() {
         </div>
 
         <div>
-          <label className="block text-[10px] font-black uppercase tracking-[0.18em] text-ink/50 mb-3">
-            Voorkeur locatie
-          </label>
-          <div className="flex flex-col sm:flex-row gap-3">
+          <label className={`${labelClass} mb-3`}>Voorkeur locatie</label>
+          <div className="flex flex-col gap-3">
             {[
               { value: "buurt" as const, label: "Bij mij in de buurt" },
               { value: "online" as const, label: "Online · Zoom" },
@@ -130,13 +126,13 @@ export default function NominationForm() {
                 key={opt.value}
                 type="button"
                 onClick={() => setLocatie(opt.value)}
-                className={`flex items-center gap-2.5 px-4 py-3 border text-sm transition-colors cursor-pointer text-left ${
+                className={`flex items-center gap-3 px-4 py-3 border text-sm transition-colors cursor-pointer text-left ${
                   locatie === opt.value
                     ? "border-ink text-ink"
                     : "border-ink/20 text-ink/50 hover:border-ink/50"
                 }`}
               >
-                <span className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
                   locatie === opt.value ? "border-terracotta" : "border-ink/30"
                 }`}>
                   {locatie === opt.value && (
@@ -150,26 +146,10 @@ export default function NominationForm() {
         </div>
       </div>
 
-      {/* E-mail */}
-      <div>
-        <label className="block text-[10px] font-black uppercase tracking-[0.18em] text-ink/50 mb-2">
-          Je e-mailadres
-        </label>
-        <input
-          type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="naam@voorbeeld.nl"
-          className="w-full border border-ink/20 bg-paper px-4 py-3 text-sm focus:outline-none focus:border-ink transition-colors placeholder:text-ink/30"
-        />
-      </div>
-
-      {/* Footer */}
       {error && <p className="text-[13px] text-terracotta">{error}</p>}
 
       <div className="border-t border-ink/12 pt-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-5">
-        <p className="text-[11px] text-ink/45 leading-relaxed">
+        <p className="text-[11px] text-ink/45 leading-relaxed max-w-xs">
           Door te nomineren ga je akkoord met de huisregels van Tijdgeest.
           Je voorstel is niet bindend — pas als de kring vol is en jij bevestigt,
           gaat de avond door.

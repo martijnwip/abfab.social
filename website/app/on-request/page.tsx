@@ -1,11 +1,26 @@
 import Nav from "@/components/nav";
+import { createClient } from "@/lib/supabase/server";
+import Link from "next/link";
 import NominationForm from "./nomination-form";
 
 export const metadata = {
   title: "On Request — Tijdgeest",
 };
 
-export default function OnRequestPage() {
+export default async function OnRequestPage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  let member: { id: string; status: string } | null = null;
+  if (user) {
+    const { data } = await supabase
+      .from("members")
+      .select("id, status")
+      .eq("user_id", user.id)
+      .single();
+    member = data;
+  }
+
   return (
     <>
       <Nav />
@@ -13,14 +28,12 @@ export default function OnRequestPage() {
       {/* Hero */}
       <section className="max-w-4xl mx-auto px-6 pt-10 md:pt-16 pb-16">
 
-        {/* Breadcrumb */}
         <p className="text-[10px] font-black uppercase tracking-[0.22em] text-ink/35 mb-8">
           De Formats{" "}
           <span className="mx-2">/</span>
           On Request
         </p>
 
-        {/* Badges */}
         <div className="flex items-center gap-3 mb-8">
           <span className="inline-flex items-center gap-2 bg-terracotta/20 text-terracotta text-[10px] font-black uppercase tracking-[0.14em] px-3.5 py-1.5 rounded-full">
             <span className="w-1.5 h-1.5 rounded-full bg-terracotta" />
@@ -31,7 +44,6 @@ export default function OnRequestPage() {
           </span>
         </div>
 
-        {/* Titel */}
         <h1 className="text-[56px] md:text-[76px] font-black leading-[0.93] tracking-[-0.025em] mb-8 max-w-2xl">
           On Request.
           <br />
@@ -40,14 +52,12 @@ export default function OnRequestPage() {
           graag wilt lezen.
         </h1>
 
-        {/* Intro */}
         <p className="text-[17px] leading-[1.65] text-ink/65 max-w-xl mb-14">
           Onze leesclubs lezen wat het genootschap kiest. On Request draait het
           om: jij geeft een titel op, en zodra er genoeg medelezers zijn,
           plannen we een avond.
         </p>
 
-        {/* Notice */}
         <div className="border border-ink/15 px-7 py-6 flex items-start gap-4 max-w-2xl">
           <span className="w-2.5 h-2.5 rounded-full bg-terracotta shrink-0 mt-1" />
           <div>
@@ -65,50 +75,49 @@ export default function OnRequestPage() {
 
       </section>
 
-      {/* Separator */}
       <div className="border-t border-ink/15" />
 
       {/* Hoe werkt het */}
       <section className="bg-krant/40 py-16">
         <div className="max-w-4xl mx-auto px-6">
-        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-ink/40 mb-5">
-          Hoe werkt het?
-        </p>
-        <h2 className="text-[42px] font-black tracking-tight leading-tight mb-14">
-          Vier stappen, een nieuwe leesavond.
-        </h2>
+          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-ink/40 mb-5">
+            Hoe werkt het?
+          </p>
+          <h2 className="text-[42px] font-black tracking-tight leading-tight mb-14">
+            Vier stappen, een nieuwe leesavond.
+          </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-          {[
-            {
-              n: "01",
-              title: "Nomineer een titel",
-              body: "Geef het boek op dat jij graag met anderen wilt bespreken. Roman, essay, debuut — alles kan, zolang het in vertaling of origineel verkrijgbaar is.",
-            },
-            {
-              n: "02",
-              title: "Bepaal de kring",
-              body: "Geef aan hoeveel medelezers je zoekt — minimaal vier, maximaal twaalf. Hoe groter de kring, hoe langer het kan duren voor we vol zitten.",
-            },
-            {
-              n: "03",
-              title: "Wij verzamelen",
-              body: "Wij plaatsen je nominatie op de open lijst. Andere leden schrijven zich in. Zodra het minimum bereikt is, nemen we contact op.",
-            },
-            {
-              n: "04",
-              title: "Bij jou of online",
-              body: "Jij kiest: een avond bij jou in de buurt, of online via Zoom. Wij regelen de uitnodiging, de leidraad en — als je dat wilt — een begeleider.",
-            },
-          ].map((step) => (
-            <div key={step.n}>
-              <p className="text-[13px] font-black text-ink mb-3">{step.n}</p>
-              <div className="border-t border-ink/20 mb-5" />
-              <h3 className="text-[17px] font-black tracking-tight mb-3">{step.title}</h3>
-              <p className="text-[13px] leading-[1.7] text-ink/60">{step.body}</p>
-            </div>
-          ))}
-        </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+            {[
+              {
+                n: "01",
+                title: "Nomineer een titel",
+                body: "Geef het boek op dat jij graag met anderen wilt bespreken. Roman, essay, debuut — alles kan, zolang het in vertaling of origineel verkrijgbaar is.",
+              },
+              {
+                n: "02",
+                title: "Bepaal de kring",
+                body: "Geef aan hoeveel medelezers je zoekt — minimaal vier, maximaal twaalf. Hoe groter de kring, hoe langer het kan duren voor we vol zitten.",
+              },
+              {
+                n: "03",
+                title: "Wij verzamelen",
+                body: "Wij plaatsen je nominatie op de open lijst. Andere leden schrijven zich in. Zodra het minimum bereikt is, nemen we contact op.",
+              },
+              {
+                n: "04",
+                title: "Bij jou of online",
+                body: "Jij kiest: een avond bij jou in de buurt, of online via Zoom. Wij regelen de uitnodiging, de leidraad en — als je dat wilt — een begeleider.",
+              },
+            ].map((step) => (
+              <div key={step.n}>
+                <p className="text-[13px] font-black text-ink mb-3">{step.n}</p>
+                <div className="border-t border-ink/20 mb-5" />
+                <h3 className="text-[17px] font-black tracking-tight mb-3">{step.title}</h3>
+                <p className="text-[13px] leading-[1.7] text-ink/60">{step.body}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
       <div className="border-t border-ink/15" />
@@ -116,8 +125,6 @@ export default function OnRequestPage() {
       {/* Onze voorbereiding */}
       <section className="py-16">
         <div className="max-w-4xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-start">
-
-          {/* Links */}
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-ink/40 mb-5">
               Onze voorbereiding
@@ -138,13 +145,12 @@ export default function OnRequestPage() {
             </p>
           </div>
 
-          {/* Rechts */}
           <div>
             {[
-              { label: "Recensies",             value: "NRC, De Standaard, De Groene, internationale pers." },
+              { label: "Recensies",              value: "NRC, De Standaard, De Groene, internationale pers." },
               { label: "Podcasts &\nInterviews", value: "Auteur in gesprek met andere lezers en denkers." },
-              { label: "Gesprekskaart",          value: "Vier tot vijf vragen, gestuurd één week voor de avond." },
-              { label: "Begeleider",             value: "Optioneel — een ervaren lezer modereert het gesprek." },
+              { label: "Gesprekskaart",           value: "Vier tot vijf vragen, gestuurd één week voor de avond." },
+              { label: "Begeleider",              value: "Optioneel — een ervaren lezer modereert het gesprek." },
             ].map((row) => (
               <div key={row.label} className="flex flex-col sm:grid sm:grid-cols-[160px_1fr] sm:gap-6 gap-1.5 py-5 border-b border-ink/12 first:border-t first:border-ink/12">
                 <p className="text-[10px] font-black uppercase tracking-[0.16em] text-ink/70 whitespace-pre-line leading-relaxed">
@@ -154,7 +160,6 @@ export default function OnRequestPage() {
               </div>
             ))}
           </div>
-
         </div>
       </section>
       <div className="border-t border-ink/15" />
@@ -172,7 +177,47 @@ export default function OnRequestPage() {
             Vul je voorstel in. We bewaren je nominatie en nemen contact op zodra
             het format live gaat of het minimum aan medelezers is bereikt.
           </p>
-          <NominationForm />
+
+          {!user ? (
+            /* Niet ingelogd */
+            <div className="border border-ink/15 px-6 py-8 text-center">
+              <p className="text-[14px] text-ink/65 mb-6 leading-relaxed">
+                Je moet ingelogd zijn als lid om een titel te nomineren.
+              </p>
+              <div className="flex items-center justify-center gap-3">
+                <Link
+                  href="/login?next=/on-request"
+                  className="bg-ink text-paper text-xs font-black uppercase tracking-[0.12em] px-6 py-3 hover:bg-ink/85 transition-colors"
+                >
+                  Inloggen
+                </Link>
+                <Link
+                  href="/login?next=/on-request"
+                  className="border border-ink text-ink text-xs font-black uppercase tracking-[0.12em] px-6 py-3 hover:bg-ink hover:text-paper transition-colors"
+                >
+                  Word lid →
+                </Link>
+              </div>
+            </div>
+          ) : member?.status === "pending" ? (
+            /* Pending */
+            <div className="flex items-start gap-3 border border-ink/15 px-5 py-5">
+              <span className="w-2 h-2 rounded-full bg-mustard shrink-0 mt-1" />
+              <p className="text-[14px] text-ink/65 leading-relaxed">
+                Je account wordt nog beoordeeld. Zodra je bent goedgekeurd kun je een titel nomineren.
+              </p>
+            </div>
+          ) : member?.status === "approved" ? (
+            /* Goedgekeurd lid */
+            <NominationForm memberId={member.id} />
+          ) : (
+            /* Geen member record */
+            <div className="border border-ink/15 px-6 py-8 text-center">
+              <p className="text-[14px] text-ink/65 mb-6">
+                Je account is nog niet gekoppeld aan een lidmaatschap. Neem contact op voor meer informatie.
+              </p>
+            </div>
+          )}
         </div>
       </section>
     </>
