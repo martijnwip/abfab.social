@@ -3,15 +3,17 @@ import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import Link from "next/link";
 import EditWorkForm from "./edit-work-form";
+import SourcesSection from "./sources-section";
 
 export default async function EditWorkPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
   const service = createServiceClient();
 
-  const [{ data: work }, { data: tags }] = await Promise.all([
+  const [{ data: work }, { data: tags }, { data: sources }] = await Promise.all([
     supabase.from("works").select("*").eq("id", id).single(),
     supabase.from("tags").select("naam").order("naam"),
+    supabase.from("work_sources").select("id, type, titel, beschrijving, inhoud, bron").eq("work_id", id).order("created_at"),
   ]);
 
   if (!work) notFound();
@@ -37,7 +39,7 @@ export default async function EditWorkPage({ params }: { params: Promise<{ id: s
   const nomination = nominationByWorkId ?? nominationByTitel;
 
   const tagNames = tags?.map((t) => t.naam) ?? [];
-  const gesprekskaart: { vraag: string; toelichting: string }[] = work.gesprekskaart ?? [];
+  const gesprekskaart: { sectie?: string; vraag: string; toelichting: string }[] = work.gesprekskaart ?? [];
 
   // E-mail ophalen via member_id → user_id → auth.users
   let nominatorEmail: string | null = null;
@@ -139,23 +141,53 @@ export default async function EditWorkPage({ params }: { params: Promise<{ id: s
 
       <EditWorkForm work={work} availableTags={tagNames} />
 
+      {/* Bronnen */}
+      <SourcesSection workId={id} initialSources={sources ?? []} />
+
       {/* Gesprekskaart */}
       {gesprekskaart.length > 0 && (
         <div className="mt-16 pt-10 border-t border-ink/10 max-w-2xl">
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-ink/40 mb-6">
             Gesprekskaart
           </p>
-          <ol className="space-y-6">
-            {gesprekskaart.map((item, i) => (
-              <li key={i} className="grid grid-cols-[24px_1fr] gap-4">
-                <span className="text-[11px] font-black text-terracotta pt-0.5">{i + 1}.</span>
-                <div>
-                  <p className="text-[14px] font-black leading-snug mb-1">{item.vraag}</p>
-                  <p className="text-[12px] text-ink/55 leading-relaxed">{item.toelichting}</p>
+          <div className="space-y-8">
+            {(() => {
+              // Groepeer op sectie
+              const sections: { naam: string; items: typeof gesprekskaart }[] = [];
+              for (const item of gesprekskaart) {
+                const naam = item.sectie ?? "";
+                const last = sections[sections.length - 1];
+                if (last && last.naam === naam) last.items.push(item);
+                else sections.push({ naam, items: [item] });
+              }
+              const hasHeaders = sections.some((s) => s.naam !== "");
+              let counter = 0;
+              return sections.map((section, si) => (
+                <div key={si}>
+                  {hasHeaders && section.naam && (
+                    <p className="text-[9px] font-black uppercase tracking-[0.18em] text-ink/40 mb-4 pb-2 border-b border-ink/10">
+                      {section.naam}
+                    </p>
+                  )}
+                  <ol className="space-y-5">
+                    {section.items.map((item) => {
+                      counter++;
+                      const n = counter;
+                      return (
+                        <li key={n} className="grid grid-cols-[24px_1fr] gap-4">
+                          <span className="text-[11px] font-black text-terracotta pt-0.5">{n}.</span>
+                          <div>
+                            <p className="text-[14px] font-black leading-snug mb-1">{item.vraag}</p>
+                            <p className="text-[12px] text-ink/55 leading-relaxed">{item.toelichting}</p>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ol>
                 </div>
-              </li>
-            ))}
-          </ol>
+              ));
+            })()}
+          </div>
         </div>
       )}
     </main>

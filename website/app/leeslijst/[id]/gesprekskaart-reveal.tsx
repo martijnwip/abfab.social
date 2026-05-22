@@ -3,7 +3,58 @@
 import { useState } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 
-type Item = { vraag: string; toelichting: string };
+type Item = { sectie?: string; vraag: string; toelichting: string };
+
+type Section = { naam: string; items: Item[] };
+
+function groupBySectie(items: Item[]): Section[] {
+  const sections: Section[] = [];
+  for (const item of items) {
+    const naam = item.sectie ?? "";
+    const last = sections[sections.length - 1];
+    if (last && last.naam === naam) {
+      last.items.push(item);
+    } else {
+      sections.push({ naam, items: [item] });
+    }
+  }
+  return sections;
+}
+
+function GesprekskaartList({ items }: { items: Item[] }) {
+  const sections = groupBySectie(items);
+  const hasHeaders = sections.some((s) => s.naam !== "");
+  let counter = 0;
+
+  return (
+    <div className="space-y-8">
+      {sections.map((section, si) => (
+        <div key={si}>
+          {hasHeaders && section.naam && (
+            <p className="text-[9px] font-black uppercase tracking-[0.22em] text-ink/40 mb-4 pb-2 border-b border-ink/10">
+              {section.naam}
+            </p>
+          )}
+          <ol className="space-y-6">
+            {section.items.map((item) => {
+              counter++;
+              const n = counter;
+              return (
+                <li key={n} className="grid grid-cols-[24px_1fr] gap-4">
+                  <span className="text-[11px] font-black text-terracotta pt-0.5">{n}.</span>
+                  <div>
+                    <p className="text-[15px] font-black leading-snug mb-1.5">{item.vraag}</p>
+                    <p className="text-[13px] text-ink/55 leading-relaxed">{item.toelichting}</p>
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function GesprekskaartReveal({ items }: { items: Item[] }) {
   const [open, setOpen] = useState(false);
@@ -11,8 +62,8 @@ export default function GesprekskaartReveal({ items }: { items: Item[] }) {
 
   if (revealed) {
     return (
-      <div className="mt-8 space-y-6">
-        <div className="flex items-center gap-3">
+      <div className="mt-8">
+        <div className="flex items-center gap-3 mb-6">
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-ink/40">
             Gesprekskaart
           </p>
@@ -23,17 +74,7 @@ export default function GesprekskaartReveal({ items }: { items: Item[] }) {
             Verbergen
           </button>
         </div>
-        <ol className="space-y-6">
-          {items.map((item, i) => (
-            <li key={i} className="grid grid-cols-[24px_1fr] gap-4">
-              <span className="text-[11px] font-black text-terracotta pt-0.5">{i + 1}.</span>
-              <div>
-                <p className="text-[15px] font-black leading-snug mb-1.5">{item.vraag}</p>
-                <p className="text-[13px] text-ink/55 leading-relaxed">{item.toelichting}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
+        <GesprekskaartList items={items} />
       </div>
     );
   }

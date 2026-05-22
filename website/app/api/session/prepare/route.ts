@@ -175,7 +175,7 @@ const OUTPUT_SCHEMA = JSON.stringify({
   synopsis: "",
   receptie: { samenvatting: "", bronnen: [] },
   interviews: [{ titel: "", url: "", platform: "" }],
-  gesprekskaart: [{ vraag: "", toelichting: "" }],
+  gesprekskaart: [{ sectie: "", vraag: "", toelichting: "" }],
 });
 
 // ─── Route handler ───────────────────────────────────────────────────────────
@@ -222,20 +222,43 @@ export async function POST(request: Request) {
     jaar_eerste_publicatie = w.jaar_eerste_publicatie;
   }
 
-  // 2. Run agent loop
+  // 2. Handmatige bronnen ophalen
+  const { data: workSources } = await supabase
+    .from("work_sources")
+    .select("type, titel, beschrijving, inhoud, bron")
+    .eq("work_id", resolvedWorkId)
+    .order("created_at", { ascending: true });
+
+  const sourcesContext = (workSources ?? []).length > 0
+    ? "\n\n## Handmatig toegevoegde bronnen\n\nDe volgende teksten zijn handmatig toegevoegd en bevatten primaire informatie over dit boek. " +
+      "Gebruik ze als belangrijkste bron voor de gesprekskaart — ze gaan voor op wat je via tools vindt.\n\n" +
+      (workSources ?? []).map((s) => {
+        const label = s.titel ? `${s.titel} (${s.type})` : s.type;
+        const beschrijvingStr = s.beschrijving ? `\nToelichting: ${s.beschrijving}` : "";
+        const bronStr = s.bron ? `\nBron: ${s.bron}` : "";
+        return `### ${label}${beschrijvingStr}${bronStr}\n\n${s.inhoud}`;
+      }).join("\n\n---\n\n")
+    : "";
+
+  // 3. Run agent loop
   const systemPrompt =
     "Je bent een onderzoeksassistent voor Tijdgeest, een Nederlandse boekenclub. " +
     "Voor elk boek verzamel je feitelijke informatie uit de tools die je tot je beschikking hebt. " +
     "Gebruik alleen bronnen die je daadwerkelijk hebt opgehaald — verzin niets. " +
-    "Genereer de output als JSON conform het meegestuurde schema. " +
     "De synopsis is maximaal 150 woorden in het Nederlands. " +
-    "De gesprekskaart bevat 5 tot 7 vragen die geschikt zijn voor een groepsgesprek over het boek, " +
-    "met voor elke vraag een korte toelichting.";
+    "De gesprekskaart bevat 6 tot 10 vragen verdeeld over twee secties. " +
+    "Sectie 1 heet 'Op basis van het boek en onderzoek' — hierin staan 3 à 4 vragen op basis van wat je via de tools hebt gevonden. " +
+    (sourcesContext
+      ? "Sectie 2 krijgt de naam van de handmatig toegevoegde bron (bijv. de podcasttitel of interviewbron) — hierin staan 3 à 4 vragen die direct voortkomen uit die specifieke tekst, met citaten of concrete momenten als aanknopingspunt in de toelichting. " +
+        "Elke vraag krijgt een 'sectie' veld met de naam van de sectie. "
+      : "Alle vragen krijgen sectie 'Op basis van het boek en onderzoek'. ") +
+    "BELANGRIJK: Retourneer uitsluitend een geldig JSON-object. Geen inleidende tekst, geen uitleg, geen markdown. Alleen de JSON.";
 
   const userMessage =
     `Bereid de sessie voor voor het boek "${originele_titel}" van ${auteur}` +
     (jaar_eerste_publicatie ? ` (${jaar_eerste_publicatie})` : "") +
-    `.\n\nGebruik de beschikbare tools om informatie te verzamelen en retourneer daarna exact dit JSON-schema (gevuld met de gevonden data):\n\n${OUTPUT_SCHEMA}`;
+    sourcesContext +
+    `\n\nGebruik de beschikbare tools om aanvullende informatie te verzamelen en retourneer daarna ALLEEN dit JSON-object (gevuld met de gevonden data, geen andere tekst):\n\n${OUTPUT_SCHEMA}`;
 
   const messages: Anthropic.MessageParam[] = [
     { role: "user", content: userMessage },
@@ -246,7 +269,7 @@ export async function POST(request: Request) {
   while (true) {
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 4096,
+      max_tokens: 8096,
       system: systemPrompt,
       tools,
       messages,
@@ -285,6 +308,11 @@ export async function POST(request: Request) {
   }
 
   // 3. Parse JSON from Claude's response
+  if (!finalText) {
+    console.error("[prepare] No text block in Claude response");
+    return NextResponse.json({ error: "Geen tekst in Claude response" }, { status: 500 });
+  }
+
   let prepData: Record<string, unknown> | null = null;
   if (finalText) {
     // Strip markdown fences first
@@ -300,6 +328,7 @@ export async function POST(request: Request) {
     try {
       prepData = JSON.parse(cleaned);
     } catch {
+      console.error("[prepare] JSON parse failed. Raw response:", finalText);
       return NextResponse.json(
         { error: "Claude response was not valid JSON", raw: finalText },
         { status: 500 }
