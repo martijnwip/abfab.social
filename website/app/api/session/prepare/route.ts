@@ -241,17 +241,40 @@ export async function POST(request: Request) {
     : "";
 
   // 3. Run agent loop
+  const sourceInstructions = (() => {
+    const sources = workSources ?? [];
+    if (sources.length === 0) {
+      return "Alle vragen krijgen sectie 'Op basis van het boek en onderzoek'. ";
+    }
+    const sourceLabels = sources.map((s) =>
+      s.titel ? `"${s.titel}"` : `"${s.type}"`
+    );
+    if (sourceLabels.length === 1) {
+      return (
+        `Sectie 2 heet ${sourceLabels[0]} — hierin staan 3 à 4 vragen die direct voortkomen uit die specifieke brontekst, ` +
+        `met citaten of concrete momenten als aanknopingspunt in de toelichting. ` +
+        `Elke vraag krijgt een 'sectie' veld met de exacte sectienaam. `
+      );
+    }
+    const sectionList = sourceLabels
+      .map((label, i) => `Sectie ${i + 2} heet ${label}`)
+      .join("; ");
+    return (
+      `Voor elke handmatig toegevoegde bron maak je een aparte sectie: ${sectionList}. ` +
+      `Elke sectie bevat 2 à 3 vragen die uitsluitend voortkomen uit die specifieke brontekst, ` +
+      `met citaten of concrete momenten als aanknopingspunt in de toelichting. ` +
+      `Elke vraag krijgt een 'sectie' veld met de exacte sectienaam. `
+    );
+  })();
+
   const systemPrompt =
     "Je bent een onderzoeksassistent voor Tijdgeest, een Nederlandse boekenclub. " +
     "Voor elk boek verzamel je feitelijke informatie uit de tools die je tot je beschikking hebt. " +
     "Gebruik alleen bronnen die je daadwerkelijk hebt opgehaald — verzin niets. " +
     "De synopsis is maximaal 150 woorden in het Nederlands. " +
-    "De gesprekskaart bevat 6 tot 10 vragen verdeeld over twee secties. " +
+    "De gesprekskaart bevat minimaal 6 vragen verdeeld over meerdere secties. " +
     "Sectie 1 heet 'Op basis van het boek en onderzoek' — hierin staan 3 à 4 vragen op basis van wat je via de tools hebt gevonden. " +
-    (sourcesContext
-      ? "Sectie 2 krijgt de naam van de handmatig toegevoegde bron (bijv. de podcasttitel of interviewbron) — hierin staan 3 à 4 vragen die direct voortkomen uit die specifieke tekst, met citaten of concrete momenten als aanknopingspunt in de toelichting. " +
-        "Elke vraag krijgt een 'sectie' veld met de naam van de sectie. "
-      : "Alle vragen krijgen sectie 'Op basis van het boek en onderzoek'. ") +
+    sourceInstructions +
     "BELANGRIJK: Retourneer uitsluitend een geldig JSON-object. Geen inleidende tekst, geen uitleg, geen markdown. Alleen de JSON.";
 
   const userMessage =
