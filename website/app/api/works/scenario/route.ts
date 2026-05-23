@@ -110,6 +110,40 @@ TOON EN STIJL
 - Korte zinnen. Actieve vorm.
 - Nederlands, je-vorm.`;
 
+export type ScenarioData = {
+  genre: string;
+  paginas: number | null;
+  ijsbreker_vraag: string;
+  karakter_vraag_1: string;
+  karakter_vraag_2: string;
+  stijl_fragment: string;
+  stijl_fragment_toelichting: string;
+  stijl_vraag: string;
+  perspectief_vraag: string;
+  kernboodschap_hint: string;
+  thema_vraag: string;
+  motief_hint: string;
+  motief_vraag: string;
+  aanrader_vraag: string;
+};
+
+const OUTPUT_SCHEMA = JSON.stringify({
+  genre: "roman | non-fictie | essay | verhalenbundel | …",
+  paginas: null,
+  ijsbreker_vraag: "",
+  karakter_vraag_1: "",
+  karakter_vraag_2: "",
+  stijl_fragment: "Maximaal 3 zinnen uit het boek die de stijl typeren.",
+  stijl_fragment_toelichting: "Één zin waarom juist dit fragment.",
+  stijl_vraag: "",
+  perspectief_vraag: "",
+  kernboodschap_hint: "3-5 woorden: rouw, macht, identiteit, …",
+  thema_vraag: "",
+  motief_hint: "2-3 concrete beelden of motieven uit het boek",
+  motief_vraag: "",
+  aanrader_vraag: "",
+});
+
 export async function POST(request: Request) {
   const body = await request.json();
   const work_id: string | undefined = body.work_id;
@@ -125,7 +159,6 @@ export async function POST(request: Request) {
 
   if (workErr || !work) return NextResponse.json({ error: "Work not found" }, { status: 404 });
 
-  // Fetch session_prep from the first linked session if available (has synopsis + genre)
   const { data: session } = await supabase
     .from("book_sessions")
     .select("session_prep")
@@ -146,30 +179,43 @@ export async function POST(request: Request) {
     `Auteur: ${work.auteur}\n` +
     `Genre: ${genre}\n` +
     `Jaar: ${work.jaar_eerste_publicatie ?? "onbekend"}\n` +
-    `Korte omschrijving: ${synopsis}`;
+    `Korte omschrijving: ${synopsis}\n\n` +
+    `Retourneer UITSLUITEND dit JSON-object (gevuld, geen andere tekst):\n\n${OUTPUT_SCHEMA}`;
 
-  let scenarioText: string | null = null;
+  let rawText: string | null = null;
 
   try {
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 8096,
-      system: SYSTEM_PROMPT,
+      max_tokens: 4096,
+      system: SYSTEM_PROMPT + "\n\nBELANGRIJK: Retourneer uitsluitend een geldig JSON-object. Geen inleidende tekst, geen uitleg, geen markdown. Alleen de JSON.",
       messages: [{ role: "user", content: userMessage }],
     });
 
     const textBlock = response.content.find((b): b is Anthropic.TextBlock => b.type === "text");
-    scenarioText = textBlock?.text ?? null;
+    rawText = textBlock?.text ?? null;
   } catch (err) {
     console.error("[scenario] Anthropic error:", err);
     return NextResponse.json({ error: "Fout bij Claude API" }, { status: 500 });
   }
 
-  if (!scenarioText) return NextResponse.json({ error: "Geen respons van Claude" }, { status: 500 });
+  if (!rawText) return NextResponse.json({ error: "Geen respons van Claude" }, { status: 500 });
+
+  let scenarioData: ScenarioData;
+  try {
+    let cleaned = rawText.replace(/```(?:json)?\n?/g, "").replace(/```/g, "").trim();
+    const start = cleaned.indexOf("{");
+    const end = cleaned.lastIndexOf("}");
+    if (start !== -1 && end !== -1) cleaned = cleaned.slice(start, end + 1);
+    scenarioData = JSON.parse(cleaned);
+  } catch {
+    console.error("[scenario] JSON parse failed:", rawText);
+    return NextResponse.json({ error: "Claude response was not valid JSON", raw: rawText }, { status: 500 });
+  }
 
   const { error: updateErr } = await supabase
     .from("works")
-    .update({ scenario: scenarioText })
+    .update({ scenario: scenarioData })
     .eq("id", work_id);
 
   if (updateErr) {
@@ -177,5 +223,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: `Scenario gegenereerd maar niet opgeslagen: ${updateErr.message}` }, { status: 500 });
   }
 
-  return NextResponse.json({ scenario: scenarioText }, { status: 200 });
+  return NextResponse.json(scenarioData, { status: 200 });
 }

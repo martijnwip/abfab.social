@@ -7,7 +7,6 @@ import SourcesSection from "./sources-section";
 import BookTextSection from "./book-text-section";
 import BookQuestionsButton from "./book-questions-button";
 import ScenarioButton from "./scenario-button";
-import ScenarioDisplay from "./scenario-display";
 import DeleteButton from "../../delete-button";
 import GesprekskaartButton from "../../gesprekskaart-button";
 
@@ -229,7 +228,20 @@ export default async function EditWorkPage({ params }: { params: Promise<{ id: s
         </div>
       )}
 
-      {scenario && <ScenarioDisplay scenario={scenario} />}
+      {scenario && (
+        <div className="mt-10 pt-8 border-t border-ink/10 max-w-2xl flex items-center justify-between">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-ink/40 mb-1">Gespreksscenario</p>
+            <p className="text-[12px] text-ink/50">Scenario gegenereerd — klaar om te bekijken.</p>
+          </div>
+          <Link
+            href={`/admin/works/${id}/scenario`}
+            className="text-[10px] font-black uppercase tracking-widest text-ink/50 hover:text-ink transition-colors shrink-0"
+          >
+            Bekijk scenario →
+          </Link>
+        </div>
+      )}
     </main>
   );
 }
