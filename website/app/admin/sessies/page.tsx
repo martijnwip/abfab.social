@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
+import DeleteSessionButton from "./delete-session-button";
 
 async function createSession(formData: FormData) {
   "use server";
@@ -134,12 +135,15 @@ export default async function SessiesPage() {
                           {" · "}{(s as unknown as { max_deelnemers?: number }).max_deelnemers ?? 12} plekken
                         </p>
                       </div>
-                      <Link
-                        href={`/admin/sessies/${s.id}`}
-                        className="shrink-0 text-[10px] font-black uppercase tracking-widest text-ink/50 hover:text-ink transition-colors"
-                      >
-                        Bewerken →
-                      </Link>
+                      <div className="flex items-center gap-4 shrink-0">
+                        <DeleteSessionButton id={s.id} label="Verwijderen" />
+                        <Link
+                          href={`/admin/sessies/${s.id}`}
+                          className="text-[10px] font-black uppercase tracking-widest text-ink/50 hover:text-ink transition-colors"
+                        >
+                          Bewerken →
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 );

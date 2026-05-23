@@ -25,13 +25,23 @@ export async function updateWork(id: string, payload: WorkPayload) {
   redirect("/admin/works");
 }
 
-export async function deleteWork(id: string) {
+export async function deleteWork(id: string): Promise<{ error?: string }> {
   const supabase = await createClient();
 
+  const { count } = await supabase
+    .from("book_sessions")
+    .select("id", { count: "exact", head: true })
+    .eq("work_id", id);
+
+  if (count && count > 0) {
+    return { error: `Dit work is gekoppeld aan ${count} sessie${count === 1 ? "" : "s"} en kan niet worden verwijderd.` };
+  }
+
   const { error } = await supabase.from("works").delete().eq("id", id);
-  if (error) throw new Error(error.message);
+  if (error) return { error: error.message };
 
   revalidatePath("/admin/works");
+  return {};
 }
 
 export async function createWork(payload: WorkPayload, nominationId?: string) {

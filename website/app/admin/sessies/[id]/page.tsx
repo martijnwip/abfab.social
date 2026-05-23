@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { revalidatePath } from "next/cache";
 import RemoveSignupButton from "./remove-signup-button";
+import DeleteSessionButton from "../delete-session-button";
 
 async function updateSessie(formData: FormData) {
   "use server";
@@ -214,6 +215,10 @@ export default async function SessieDetailPage({ params }: { params: Promise<{ i
                 Opslaan
               </button>
             </form>
+
+            <div className="mt-6 pt-5 border-t border-ink/10 flex justify-end">
+              <DeleteSessionButton id={id} label="Sessie verwijderen" redirectAfter />
+            </div>
           </div>
 
           {/* Aanmeldingen */}

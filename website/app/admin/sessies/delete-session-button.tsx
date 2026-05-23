@@ -1,21 +1,33 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { deleteWork } from "./actions";
+import { useRouter } from "next/navigation";
+import { deleteSession } from "./actions";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
-export default function DeleteButton({ id, titel }: { id: string; titel: string }) {
+export default function DeleteSessionButton({
+  id,
+  label,
+  redirectAfter = false,
+}: {
+  id: string;
+  label: string;
+  redirectAfter?: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const router = useRouter();
 
   function handleConfirm() {
     setErrorMsg(null);
     startTransition(async () => {
-      const result = await deleteWork(id);
-      if (result.error) {
+      const result = await deleteSession(id, redirectAfter);
+      if (result?.error) {
         setErrorMsg(result.error);
         setOpen(false);
+      } else if (!redirectAfter) {
+        router.refresh();
       }
     });
   }
@@ -25,9 +37,9 @@ export default function DeleteButton({ id, titel }: { id: string; titel: string 
       <button
         onClick={() => { setErrorMsg(null); setOpen(true); }}
         disabled={isPending}
-        className="block w-full text-left p-0 m-0 bg-transparent border-none text-[10px] font-black uppercase tracking-widest text-terracotta hover:underline disabled:opacity-40 transition-colors cursor-pointer"
+        className="shrink-0 text-[10px] font-black uppercase tracking-widest text-terracotta hover:underline disabled:opacity-40 transition-colors cursor-pointer"
       >
-        {isPending ? "…" : "Verwijderen"}
+        {isPending ? "…" : label}
       </button>
 
       {errorMsg && (
@@ -37,8 +49,8 @@ export default function DeleteButton({ id, titel }: { id: string; titel: string 
       <ConfirmDialog
         open={open}
         onOpenChange={setOpen}
-        title={`"${titel}" verwijderen?`}
-        description="Dit kan niet ongedaan worden gemaakt."
+        title="Sessie verwijderen?"
+        description="Alle aanmeldingen voor deze sessie worden ook verwijderd. Dit kan niet ongedaan worden gemaakt."
         confirmLabel="Verwijderen"
         confirmVariant="danger"
         onConfirm={handleConfirm}
