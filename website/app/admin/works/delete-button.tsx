@@ -1,13 +1,25 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { deleteWork } from "./actions";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
-export default function DeleteButton({ id, titel }: { id: string; titel: string }) {
+export default function DeleteButton({
+  id,
+  titel,
+  redirectTo,
+  className,
+}: {
+  id: string;
+  titel: string;
+  redirectTo?: string;
+  className?: string;
+}) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const router = useRouter();
 
   function handleConfirm() {
     setErrorMsg(null);
@@ -16,6 +28,8 @@ export default function DeleteButton({ id, titel }: { id: string; titel: string 
       if (result.error) {
         setErrorMsg(result.error);
         setOpen(false);
+      } else if (redirectTo) {
+        router.push(redirectTo);
       }
     });
   }
@@ -25,7 +39,7 @@ export default function DeleteButton({ id, titel }: { id: string; titel: string 
       <button
         onClick={() => { setErrorMsg(null); setOpen(true); }}
         disabled={isPending}
-        className="block w-full text-left p-0 m-0 bg-transparent border-none text-[10px] font-black uppercase tracking-widest text-terracotta hover:underline disabled:opacity-40 transition-colors cursor-pointer"
+        className={className ?? "block w-full text-left p-0 m-0 bg-transparent border-none text-[10px] font-black uppercase tracking-widest text-terracotta hover:underline disabled:opacity-40 transition-colors cursor-pointer"}
       >
         {isPending ? "…" : "Verwijderen"}
       </button>

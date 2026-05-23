@@ -1,8 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import Image from "next/image";
-import DeleteButton from "./delete-button";
-import GesprekskaartButton from "./gesprekskaart-button";
 
 export default async function WorksPage() {
   const supabase = await createClient();
@@ -36,8 +34,12 @@ export default async function WorksPage() {
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
           {works.map((w) => (
-            <div key={w.id} className="group border border-ink/10 bg-white flex flex-col p-3">
-              <div className="relative aspect-[2/3] bg-krant overflow-hidden">
+            <Link
+              key={w.id}
+              href={`/admin/works/${w.id}/edit`}
+              className="group border border-ink/10 bg-white flex flex-col hover:border-ink/30 transition-colors"
+            >
+              <div className="relative aspect-2/3 bg-krant overflow-hidden">
                 {w.cover_image_url && (
                   <Image
                     src={w.cover_image_url}
@@ -47,34 +49,20 @@ export default async function WorksPage() {
                   />
                 )}
               </div>
-              <div className="p-4 flex flex-col flex-1">
+              <div className="p-3 flex flex-col flex-1">
                 <p className="text-xs font-black leading-tight">{w.originele_titel}</p>
                 <p className="text-[11px] text-ink/50 mt-0.5">{w.auteur}</p>
                 {w.jaar_eerste_publicatie && (
                   <p className="text-[11px] text-ink/40 mt-0.5">{w.jaar_eerste_publicatie}</p>
                 )}
-                <div className="flex flex-col gap-1.5 mt-auto pt-4 border-t border-ink/8">
-                  {w.gesprekskaart && (
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-seafoam shrink-0" />
-                      <span className="text-[10px] text-ink/40 font-medium">Gesprekskaart</span>
-                    </div>
-                  )}
-                  <Link
-                    href={`/admin/works/${w.id}/edit`}
-                    className="text-[10px] font-black uppercase tracking-widest text-ink/50 hover:text-ink transition-colors"
-                  >
-                    Bewerken
-                  </Link>
-                  <DeleteButton id={w.id} titel={w.originele_titel} />
-                  <GesprekskaartButton
-                    workId={w.id}
-                    titel={w.originele_titel}
-                    hasKaart={!!w.gesprekskaart}
-                  />
-                </div>
+                {w.gesprekskaart && (
+                  <div className="flex items-center gap-1.5 mt-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-seafoam shrink-0" />
+                    <span className="text-[10px] text-ink/40 font-medium">Gesprekskaart</span>
+                  </div>
+                )}
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}

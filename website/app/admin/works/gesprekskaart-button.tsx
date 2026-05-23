@@ -49,26 +49,38 @@ export default function GesprekskaartButton({ workId, titel, hasKaart }: Props) 
   const busy = generating || isPending;
 
   return (
-    <div className="flex flex-col gap-1.5 mt-1">
-      <button
-        onClick={handleGenerate}
-        disabled={busy || hasKaart}
-        className="block w-full text-left p-0 m-0 bg-transparent border-none text-[10px] font-black uppercase tracking-widest text-ink/50 hover:text-ink transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
-      >
-        {generating ? "Genereren…" : "Maak gesprekskaart"}
-      </button>
+    <div className="flex items-center gap-3">
+      {!hasKaart && (
+        <button
+          onClick={handleGenerate}
+          disabled={busy}
+          className="text-[10px] font-black uppercase tracking-widest text-ink/50 hover:text-ink transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer bg-transparent border-none p-0 m-0"
+        >
+          {generating ? "Genereren…" : "Maak gesprekskaart"}
+        </button>
+      )}
+
+      {hasKaart && (
+        <button
+          onClick={handleGenerate}
+          disabled={busy}
+          className="text-[10px] font-black uppercase tracking-widest text-ink/50 hover:text-ink transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer bg-transparent border-none p-0 m-0"
+        >
+          {generating ? "Genereren…" : "Opnieuw genereren"}
+        </button>
+      )}
 
       {hasKaart && (
         <button
           onClick={handleDelete}
           disabled={busy}
-          className="block w-full text-left p-0 m-0 bg-transparent border-none text-[10px] font-black uppercase tracking-widest text-terracotta hover:underline disabled:opacity-40 cursor-pointer"
+          className="text-[10px] font-black uppercase tracking-widest text-terracotta hover:underline disabled:opacity-40 cursor-pointer bg-transparent border-none p-0 m-0"
         >
-          Verwijder gesprekskaart
+          Verwijder kaart
         </button>
       )}
 
-      {error && <p className="text-[10px] text-terracotta">{error}</p>}
+      {error && <p className="text-[10px] text-terracotta ml-2">{error}</p>}
     </div>
   );
 }

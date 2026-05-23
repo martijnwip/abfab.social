@@ -4,6 +4,12 @@ import { createServiceClient } from "@/lib/supabase/service";
 import Link from "next/link";
 import EditWorkForm from "./edit-work-form";
 import SourcesSection from "./sources-section";
+import BookTextSection from "./book-text-section";
+import BookQuestionsButton from "./book-questions-button";
+import ScenarioButton from "./scenario-button";
+import ScenarioDisplay from "./scenario-display";
+import DeleteButton from "../../delete-button";
+import GesprekskaartButton from "../../gesprekskaart-button";
 
 export default async function EditWorkPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -40,6 +46,9 @@ export default async function EditWorkPage({ params }: { params: Promise<{ id: s
 
   const tagNames = tags?.map((t) => t.naam) ?? [];
   const gesprekskaart: { sectie?: string; vraag: string; toelichting: string }[] = work.gesprekskaart ?? [];
+  const bookTextPath: string | null = (work as unknown as { book_text_path: string | null }).book_text_path ?? null;
+  const hasBookQuestions = gesprekskaart.some((q) => q.sectie === "Op basis van de boektekst");
+  const scenario: string | null = (work as unknown as { scenario: string | null }).scenario ?? null;
 
   // E-mail ophalen via member_id → user_id → auth.users
   let nominatorEmail: string | null = null;
@@ -69,11 +78,37 @@ export default async function EditWorkPage({ params }: { params: Promise<{ id: s
   return (
     <main className="max-w-6xl mx-auto px-6 py-12">
       <p className="text-[10px] font-black uppercase tracking-[0.22em] text-ink/40 mb-4">
-        Admin · Works
+        <Link href="/admin/works" className="hover:text-ink transition-colors">Admin · Works</Link>
       </p>
-      <h1 className="text-[36px] font-black tracking-tight leading-tight mb-10">
-        Work bewerken
-      </h1>
+
+      <div className="flex items-start justify-between gap-6 mb-10">
+        <div>
+          <h1 className="text-[36px] font-black tracking-tight leading-tight">
+            {work.originele_titel}
+          </h1>
+          <p className="text-[14px] text-ink/50 mt-1">{work.auteur}{work.jaar_eerste_publicatie ? ` · ${work.jaar_eerste_publicatie}` : ""}</p>
+        </div>
+        <div className="flex items-center gap-4 shrink-0 pt-1 flex-wrap justify-end">
+          <GesprekskaartButton
+            workId={id}
+            titel={work.originele_titel}
+            hasKaart={!!work.gesprekskaart}
+          />
+          <BookQuestionsButton
+            workId={id}
+            hasBookText={!!bookTextPath}
+            hasBookQuestions={hasBookQuestions}
+          />
+          <ScenarioButton workId={id} hasScenario={!!scenario} />
+          <span className="w-px h-3 bg-ink/15" />
+          <DeleteButton
+            id={id}
+            titel={work.originele_titel}
+            redirectTo="/admin/works"
+            className="text-[10px] font-black uppercase tracking-widest text-terracotta hover:underline transition-colors cursor-pointer bg-transparent border-none p-0 m-0"
+          />
+        </div>
+      </div>
 
       {/* Nominatie — boven het formulier */}
       {nomination && (() => {
@@ -144,6 +179,9 @@ export default async function EditWorkPage({ params }: { params: Promise<{ id: s
       {/* Bronnen */}
       <SourcesSection workId={id} initialSources={sources ?? []} />
 
+      {/* Boektekst */}
+      <BookTextSection workId={id} initialPath={bookTextPath} />
+
       {/* Gesprekskaart */}
       {gesprekskaart.length > 0 && (
         <div className="mt-16 pt-10 border-t border-ink/10 max-w-2xl">
@@ -190,6 +228,8 @@ export default async function EditWorkPage({ params }: { params: Promise<{ id: s
           </div>
         </div>
       )}
+
+      {scenario && <ScenarioDisplay scenario={scenario} />}
     </main>
   );
 }
