@@ -112,36 +112,44 @@ TOON EN STIJL
 
 export type ScenarioData = {
   genre: string;
-  paginas: number | null;
+  synopsis: string;             // 2-3 zinnen over het verhaal, geen spoilers van het einde
+  personages: string;           // de belangrijkste personages met een korte typeomschrijving
+
+  // Opening
+  welkomstwoord: string;        // max 5 zinnen over auteur en boek, geen plot
   ijsbreker_vraag: string;
-  karakter_vraag_1: string;
-  karakter_vraag_2: string;
-  stijl_fragment: string;
+
+  // Plot & Personages — vraag 1 & 2 uit de selectie
+  vraag_1: string;
+  vraag_2: string;
+
+  // Stijl & Structuur — vraag 3 uit de selectie
+  vraag_3: string;
+  stijl_fragment: string;       // max 3 zinnen uit het boek
   stijl_fragment_toelichting: string;
-  stijl_vraag: string;
-  perspectief_vraag: string;
-  kernboodschap_hint: string;
-  thema_vraag: string;
-  motief_hint: string;
-  motief_vraag: string;
-  aanrader_vraag: string;
+  vergelijkingsvraag?: string;  // alleen voor verhalenbundel
+
+  // Thema's — vraag 4 & 5 uit de selectie
+  vraag_4: string;
+  vraag_5: string;
+  actualiteitsvraag: string;
 };
 
 const OUTPUT_SCHEMA = JSON.stringify({
   genre: "roman | non-fictie | essay | verhalenbundel | …",
-  paginas: null,
-  ijsbreker_vraag: "",
-  karakter_vraag_1: "",
-  karakter_vraag_2: "",
+  synopsis: "2-3 zinnen over het verhaal. Geen spoilers van het einde.",
+  personages: "De belangrijkste personages, elk met een korte typeomschrijving. Bijv: 'Anna (de verteller, teruggetrokken maar scherp observerend), haar moeder (afwezig maar alomtegenwoordig), …'",
+  welkomstwoord: "Max 5 zinnen over de auteur en het boek. Geen samenvatting van de plot.",
+  ijsbreker_vraag: "Eén concrete vraag over de eerste indruk. Niet te beantwoorden met ja of nee.",
+  vraag_1: "Vraag 1 uit de selectie — omgeschreven naar concrete scènes/personages van dit boek.",
+  vraag_2: "Vraag 2 uit de selectie — omgeschreven naar concrete scènes/personages van dit boek.",
+  vraag_3: "Vraag 3 uit de selectie — omgeschreven naar concrete scènes/personages van dit boek.",
   stijl_fragment: "Maximaal 3 zinnen uit het boek die de stijl typeren.",
-  stijl_fragment_toelichting: "Één zin waarom juist dit fragment.",
-  stijl_vraag: "",
-  perspectief_vraag: "",
-  kernboodschap_hint: "3-5 woorden: rouw, macht, identiteit, …",
-  thema_vraag: "",
-  motief_hint: "2-3 concrete beelden of motieven uit het boek",
-  motief_vraag: "",
-  aanrader_vraag: "",
+  stijl_fragment_toelichting: "Één zin waarom juist dit fragment de stijl illustreert.",
+  vergelijkingsvraag: "Alleen invullen bij verhalenbundel. Anders null.",
+  vraag_4: "Vraag 4 uit de selectie — omgeschreven naar concrete scènes/personages van dit boek.",
+  vraag_5: "Vraag 5 uit de selectie — omgeschreven naar concrete scènes/personages van dit boek.",
+  actualiteitsvraag: "Hoe raakt dit boek aan iets wat nu speelt in de wereld?",
 });
 
 export async function POST(request: Request) {
