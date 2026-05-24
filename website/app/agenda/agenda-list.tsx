@@ -24,6 +24,7 @@ type SessionItem = {
   maxDeelnemers: number;
   signupCount: number;
   signupAvatars: string[];
+  hasScenario: boolean;
   work: Work;
 };
 
@@ -101,6 +102,38 @@ function BookCoverMini({ work }: { work: Work }) {
   );
 }
 
+function SpoilerDialog({ sessionId, onClose }: { sessionId: string; onClose: () => void }) {
+  const router = useRouter();
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/60 px-6">
+      <div className="bg-paper max-w-sm w-full p-8 shadow-xl">
+        <p className="text-[9px] font-black uppercase tracking-label text-terracotta mb-4">Let op</p>
+        <h2 className="text-[22px] font-black leading-tight mb-3">
+          Deze pagina bevat<br /><em className="text-terracotta italic">spoilers.</em>
+        </h2>
+        <p className="text-[13px] text-ink/60 leading-relaxed mb-8">
+          Het scenario onthult de verhaallijn, personages en thema's van het boek.
+          Lees dit alleen als je het boek al uit hebt.
+        </p>
+        <div className="flex gap-3">
+          <button
+            onClick={() => router.push(`/agenda/${sessionId}/scenario`)}
+            className="flex-1 bg-ink text-paper text-[10px] font-black uppercase tracking-[0.12em] py-3 hover:bg-ink/85 transition-colors cursor-pointer"
+          >
+            Toch bekijken →
+          </button>
+          <button
+            onClick={onClose}
+            className="flex-1 border border-ink/20 text-ink text-[10px] font-black uppercase tracking-[0.12em] py-3 hover:border-ink/50 transition-colors cursor-pointer"
+          >
+            Annuleren
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function SignupAction({
   session,
   memberId,
@@ -117,7 +150,14 @@ function SignupAction({
   const [signedUp, setSignedUp] = useState(initialSignedUp);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [showSpoilerDialog, setShowSpoilerDialog] = useState(false);
   const router = useRouter();
+
+  // Scenario unlocked 1 week before session date
+  const sessionDate = new Date(session.datum);
+  const unlockDate = new Date(sessionDate);
+  unlockDate.setDate(unlockDate.getDate() - 7);
+  const scenarioUnlocked = new Date() >= unlockDate;
 
   if (!isLoggedIn) {
     return (
@@ -144,34 +184,47 @@ function SignupAction({
 
   if (signedUp) {
     return (
-      <div className="space-y-2">
-        <a
-          href={calendarUrl(session)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block w-full border border-ink text-ink text-[10px] font-black uppercase tracking-[0.12em] px-4 py-3 text-center hover:bg-ink hover:text-paper transition-colors"
-        >
-          Voeg toe aan agenda
-        </a>
-        <button
-          onClick={() => {
-            startTransition(async () => {
-              const supabase = createClient();
-              await supabase
-                .from("session_signups")
-                .delete()
-                .eq("session_id", session.id)
-                .eq("member_id", memberId!);
-              setSignedUp(false);
-              router.refresh();
-            });
-          }}
-          disabled={isPending}
-          className="block w-full text-center text-[11px] text-ink/40 hover:text-terracotta underline transition-colors cursor-pointer disabled:opacity-40"
-        >
-          {isPending ? "…" : "Afmelden"}
-        </button>
-      </div>
+      <>
+        {showSpoilerDialog && (
+          <SpoilerDialog sessionId={session.id} onClose={() => setShowSpoilerDialog(false)} />
+        )}
+        <div className="space-y-2">
+          {session.hasScenario && scenarioUnlocked && (
+            <button
+              onClick={() => setShowSpoilerDialog(true)}
+              className="block w-full bg-terracotta text-paper text-[10px] font-black uppercase tracking-[0.12em] px-4 py-3 text-center hover:bg-terracotta/85 transition-colors cursor-pointer"
+            >
+              Bekijk scenario →
+            </button>
+          )}
+          <a
+            href={calendarUrl(session)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block w-full border border-ink text-ink text-[10px] font-black uppercase tracking-[0.12em] px-4 py-3 text-center hover:bg-ink hover:text-paper transition-colors"
+          >
+            Voeg toe aan agenda
+          </a>
+          <button
+            onClick={() => {
+              startTransition(async () => {
+                const supabase = createClient();
+                await supabase
+                  .from("session_signups")
+                  .delete()
+                  .eq("session_id", session.id)
+                  .eq("member_id", memberId!);
+                setSignedUp(false);
+                router.refresh();
+              });
+            }}
+            disabled={isPending}
+            className="block w-full text-center text-[11px] text-ink/40 hover:text-terracotta underline transition-colors cursor-pointer disabled:opacity-40"
+          >
+            {isPending ? "…" : "Afmelden"}
+          </button>
+        </div>
+      </>
     );
   }
 

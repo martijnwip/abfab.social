@@ -16,6 +16,9 @@ async function updateSessie(formData: FormData) {
     locatie: (formData.get("locatie") as string) || null,
     notitie: (formData.get("notitie") as string) || null,
     max_deelnemers: parseInt(formData.get("max_deelnemers") as string) || 12,
+    groepscijfer: (formData.get("groepscijfer") as string)
+      ? parseFloat(formData.get("groepscijfer") as string)
+      : null,
   }).eq("id", id);
   revalidatePath(`/admin/sessies/${id}`);
 }
@@ -27,7 +30,7 @@ export default async function SessieDetailPage({ params }: { params: Promise<{ i
 
   const { data: session } = await supabase
     .from("book_sessions")
-    .select("id, datum, tijdstip, eindtijd, locatie, notitie, max_deelnemers, works(id, originele_titel, auteur, gesprekskaart)")
+    .select("id, datum, tijdstip, eindtijd, locatie, notitie, max_deelnemers, groepscijfer, works(id, originele_titel, auteur, gesprekskaart)")
     .eq("id", id)
     .single();
 
@@ -39,6 +42,7 @@ export default async function SessieDetailPage({ params }: { params: Promise<{ i
     locatie?: string | null;
     notitie?: string | null;
     max_deelnemers?: number;
+    groepscijfer?: number | null;
     works: { id: string; originele_titel: string; auteur: string; gesprekskaart: { vraag: string; toelichting: string }[] | null }
   };
   const work = sessionData.works;
@@ -205,6 +209,22 @@ export default async function SessieDetailPage({ params }: { params: Promise<{ i
                   defaultValue={sessionData.notitie ?? ""}
                   placeholder="bijv. Slotavond van de M-cyclus."
                   className="w-full border border-ink/20 bg-paper px-4 py-2.5 text-sm focus:outline-none focus:border-ink transition-colors resize-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-[0.16em] text-ink/40 mb-1.5">
+                  Groepscijfer <span className="text-ink/30 font-normal normal-case tracking-normal">(0 – 10, halve waarden toegestaan)</span>
+                </label>
+                <input
+                  name="groepscijfer"
+                  type="number"
+                  min="0"
+                  max="10"
+                  step="0.5"
+                  defaultValue={sessionData.groepscijfer ?? ""}
+                  placeholder="bijv. 8.5"
+                  className="w-full border border-ink/20 bg-paper px-4 py-2.5 text-sm focus:outline-none focus:border-ink transition-colors"
                 />
               </div>
 

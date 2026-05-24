@@ -102,12 +102,15 @@ export default async function EditWorkPage({ params }: { params: Promise<{ id: s
   }
 
   // Groepeer gesprekskaart per sectie
-  const sections: { naam: string; items: GesprekskaaartItem[] }[] = [];
+  const sections: { naam: string; items: GesprekskaaartItem[]; source?: Source }[] = [];
   for (const item of gesprekskaart) {
     const naam = item.sectie ?? "";
     const last = sections[sections.length - 1];
     if (last && last.naam === naam) last.items.push(item);
-    else sections.push({ naam, items: [item] });
+    else {
+      const sc = sectionCounts.find((s) => s.naam === naam);
+      sections.push({ naam, items: [item], source: sc?.source });
+    }
   }
   const hasHeaders = sections.some((s) => s.naam !== "");
   let counter = 0;
@@ -145,7 +148,6 @@ export default async function EditWorkPage({ params }: { params: Promise<{ id: s
               {gesprekskaart.length > 0 && (
                 <StatusPill>{gesprekskaart.length} vragen</StatusPill>
               )}
-              {hasScenario && <StatusPill color="amber">Scenario verouderd</StatusPill>}
             </div>
           </div>
           <WorkHeaderActions workId={id} hasScenario={hasScenario} />
@@ -309,9 +311,6 @@ export default async function EditWorkPage({ params }: { params: Promise<{ id: s
                 nr="04"
                 label="Avondscenario"
                 sub="geprinte gids voor de boekclubavond"
-                actions={hasScenario ? (
-                  <span className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 bg-amber-100 text-amber-700">Verouderd</span>
-                ) : undefined}
               />
 
               <div className="max-w-2xl">

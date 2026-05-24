@@ -17,7 +17,7 @@ export default async function AgendaPage() {
 
   const { data: sessions } = await supabase
     .from("book_sessions")
-    .select("id, datum, tijdstip, eindtijd, locatie, notitie, max_deelnemers, work_id, works(id, originele_titel, auteur, cover_image_url, tags)")
+    .select("id, datum, tijdstip, eindtijd, locatie, notitie, max_deelnemers, work_id, works(id, originele_titel, auteur, cover_image_url, tags, scenario)")
     .gte("datum", today)
     .order("datum", { ascending: true });
 
@@ -121,6 +121,7 @@ export default async function AgendaPage() {
       maxDeelnemers: sx.max_deelnemers ?? 12,
       signupCount: signupCountMap[s.id] ?? 0,
       signupAvatars: signupAvatarsMap[s.id] ?? [],
+      hasScenario: !!(sx.works as unknown as { scenario?: unknown }).scenario,
       work: sx.works,
     };
   });
