@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import PrintButton from "./print-button";
+import ShareButton from "./share-button";
 import type { ScenarioData } from "@/app/api/works/scenario/route";
 
 const FASES = [
@@ -90,7 +91,10 @@ export default async function ScenarioPage({ params }: { params: Promise<{ id: s
         <Link href={`/admin/works/${id}/edit`} className="text-[10px] font-black uppercase tracking-widest text-ink/40 hover:text-ink transition-colors">
           ← Terug
         </Link>
-        <PrintButton />
+        <div className="flex items-center gap-6">
+          <ShareButton workId={id} />
+          <PrintButton />
+        </div>
       </div>
 
       <div className="max-w-205 mx-auto px-8 py-10">
