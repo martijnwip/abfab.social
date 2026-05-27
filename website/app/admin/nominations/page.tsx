@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import Link from "next/link";
-import { rejectNomination } from "../actions";
+import { rejectNomination, deleteNomination } from "../actions";
 
 export default async function NominationsPage() {
   const supabase = await createClient();
@@ -114,12 +114,22 @@ export default async function NominationsPage() {
                       </form>
                     </>
                   )}
-                  {n.status !== "pending" && (
+                  {n.status === "approved" && (
                     <p className="text-[11px] font-mono text-ink/30">
                       {new Date(n.created_at).toLocaleDateString("nl-NL", {
                         day: "numeric", month: "short", year: "numeric",
                       })}
                     </p>
+                  )}
+                  {n.status === "rejected" && (
+                    <form action={deleteNomination.bind(null, n.id)}>
+                      <button
+                        type="submit"
+                        className="w-full text-[10px] font-black uppercase tracking-[0.12em] border border-terracotta/30 px-3 py-2 text-terracotta hover:bg-terracotta hover:text-paper hover:border-terracotta transition-colors cursor-pointer bg-transparent"
+                      >
+                        Verwijderen
+                      </button>
+                    </form>
                   )}
                 </div>
               </div>
