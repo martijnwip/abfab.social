@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { sendNominationStatusEmail } from "../actions";
 
 export type WorkPayload = {
   originele_titel: string;
@@ -59,6 +60,7 @@ export async function createWork(payload: WorkPayload, nominationId?: string) {
       .from("nominations")
       .update({ status: "approved", work_id: work.id })
       .eq("id", nominationId);
+    await sendNominationStatusEmail(nominationId, "approved");
   }
 
   redirect("/admin/works");

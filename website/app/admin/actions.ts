@@ -16,7 +16,97 @@ export async function rejectNomination(nominationId: string) {
     .update({ status: "rejected" })
     .eq("id", nominationId);
   if (error) throw new Error(error.message);
+  await sendNominationStatusEmail(nominationId, "rejected");
   revalidatePath("/admin/nominations");
+}
+
+export async function sendNominationStatusEmail(nominationId: string, status: "approved" | "rejected") {
+  const service = createServiceClient();
+
+  const { data: nomination } = await service
+    .from("nominations")
+    .select("titel, auteur, member_id, members(user_id)")
+    .eq("id", nominationId)
+    .single();
+
+  if (!nomination) return;
+
+  const userId = (nomination as unknown as { members: { user_id: string } | null }).members?.user_id;
+  if (!userId) return;
+
+  const { data: { users } } = await service.auth.admin.listUsers({ perPage: 1000 });
+  const user = users.find((u) => u.id === userId);
+  if (!user?.email) return;
+
+  const titel = (nomination as unknown as { titel: string }).titel;
+  const auteur = (nomination as unknown as { auteur: string | null }).auteur;
+
+  await resend.emails.send({
+    from: "Tijdgeest <noreply@tijdgeestleest.nl>",
+    to: user.email,
+    subject: status === "approved"
+      ? `Je nominatie voor "${titel}" is goedgekeurd`
+      : `Update over je nominatie voor "${titel}"`,
+    html: nominationEmailHtml(user.email, titel, auteur, status),
+  });
+}
+
+function nominationEmailHtml(email: string, titel: string, auteur: string | null, status: "approved" | "rejected"): string {
+  const isApproved = status === "approved";
+  const kop = isApproved ? "Je nominatie is goedgekeurd." : "Je nominatie is helaas niet geselecteerd.";
+  const body = isApproved
+    ? `<em style="font-style:italic;color:#c1440e;">${titel}</em>${auteur ? ` van ${auteur}` : ""} is opgenomen in de Tijdgeest bibliotheek. We laten je weten zodra er een avond wordt gepland.`
+    : `Bedankt voor je nominatie van <em style="font-style:italic;">${titel}</em>${auteur ? ` van ${auteur}` : ""}. We hebben voor dit moment een andere selectie gemaakt, maar je motivatie is waardevol.`;
+  const cta = isApproved
+    ? `<a href="https://www.tijdgeestleest.nl/agenda" style="display:inline-block;background:#1a160f;color:#f5f0e8;font-size:10px;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;text-decoration:none;padding:14px 28px;">Bekijk de agenda →</a>`
+    : "";
+
+  return `<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${kop}</title>
+</head>
+<body style="margin:0;padding:0;background:#f5f0e8;font-family:Georgia,serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f0e8;padding:40px 0;">
+    <tr>
+      <td align="center">
+        <table width="560" cellpadding="0" cellspacing="0" style="background:#f5f0e8;">
+
+          <tr>
+            <td style="padding:0 0 32px 0;border-bottom:1px solid rgba(26,22,15,0.15);">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="font-size:13px;font-weight:900;color:#1a160f;">▲</td>
+                  <td style="padding-left:10px;font-size:9px;font-weight:900;letter-spacing:0.2em;text-transform:uppercase;color:rgba(26,22,15,0.55);">Tijdgeest · Modern Leesgenootschap</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:40px 0;">
+              <p style="margin:0 0 6px 0;font-size:9px;font-weight:900;letter-spacing:0.2em;text-transform:uppercase;color:${isApproved ? "#c1440e" : "rgba(26,22,15,0.40)"};">Nominatie</p>
+              <h1 style="margin:0 0 24px 0;font-size:32px;font-weight:900;line-height:1.1;letter-spacing:-0.02em;color:#1a160f;">${kop}</h1>
+              <p style="margin:0 0 32px 0;font-size:15px;line-height:1.7;color:rgba(26,22,15,0.65);">${body}</p>
+              ${cta}
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:24px 0 0 0;border-top:1px solid rgba(26,22,15,0.10);">
+              <p style="margin:0;font-size:9px;font-weight:900;letter-spacing:0.2em;text-transform:uppercase;color:rgba(26,22,15,0.25);">▲ Tijdgeest · tijdgeestleest.nl</p>
+              <p style="margin:6px 0 0 0;font-size:9px;color:rgba(26,22,15,0.25);">Dit bericht is verstuurd naar ${email}</p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
 }
 
 export async function updateMemberStatus(memberId: string, status: MemberStatus) {
