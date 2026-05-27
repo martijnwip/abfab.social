@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import Link from "next/link";
+import { rejectNomination } from "../actions";
 
 export default async function NominationsPage() {
   const supabase = await createClient();
@@ -63,7 +64,7 @@ export default async function NominationsPage() {
           {rows.map((n) => {
             const approveUrl = `/admin/works/new?nomination_id=${n.id}&titel=${encodeURIComponent(n.titel)}&auteur=${encodeURIComponent(n.auteur ?? "")}&waarom=${encodeURIComponent(n.waarom ?? "")}`;
             return (
-              <div key={n.id} className={`grid grid-cols-[1fr_160px_80px_120px_120px_140px] gap-6 py-5 items-start ${n.status === "approved" ? "opacity-50" : ""}`}>
+              <div key={n.id} className={`grid grid-cols-[1fr_160px_80px_120px_120px_140px] gap-6 py-5 items-start ${n.status !== "pending" ? "opacity-50" : ""}`}>
                 <div>
                   <p className="text-[15px] font-black leading-tight">{n.titel}</p>
                   {n.auteur && <p className="text-[12px] text-ink/50 mt-0.5">{n.auteur}</p>}
@@ -87,20 +88,33 @@ export default async function NominationsPage() {
                 <span className={`inline-block text-[9px] font-black uppercase tracking-[0.12em] px-2.5 py-1 mt-0.5 w-fit ${
                   n.status === "approved"
                     ? "bg-seafoam/40 text-ink/60"
+                    : n.status === "rejected"
+                    ? "bg-terracotta/15 text-terracotta/70"
                     : "bg-mustard/20 text-ink/60"
                 }`}>
-                  {n.status === "approved" ? "Goedgekeurd" : "In behandeling"}
+                  {n.status === "approved" ? "Goedgekeurd" : n.status === "rejected" ? "Afgewezen" : "In behandeling"}
                 </span>
 
-                <div className="pt-0.5">
-                  {n.status !== "approved" ? (
-                    <Link
-                      href={approveUrl}
-                      className="text-[10px] font-black uppercase tracking-[0.12em] border border-ink/20 px-3 py-2 hover:bg-ink hover:text-paper hover:border-ink transition-colors"
-                    >
-                      Goedkeuren →
-                    </Link>
-                  ) : (
+                <div className="pt-0.5 flex flex-col gap-2">
+                  {n.status === "pending" && (
+                    <>
+                      <Link
+                        href={approveUrl}
+                        className="text-[10px] font-black uppercase tracking-[0.12em] border border-ink/20 px-3 py-2 hover:bg-ink hover:text-paper hover:border-ink transition-colors text-center"
+                      >
+                        Goedkeuren →
+                      </Link>
+                      <form action={rejectNomination.bind(null, n.id)}>
+                        <button
+                          type="submit"
+                          className="w-full text-[10px] font-black uppercase tracking-[0.12em] border border-terracotta/30 px-3 py-2 text-terracotta hover:bg-terracotta hover:text-paper hover:border-terracotta transition-colors cursor-pointer bg-transparent"
+                        >
+                          Afwijzen
+                        </button>
+                      </form>
+                    </>
+                  )}
+                  {n.status !== "pending" && (
                     <p className="text-[11px] font-mono text-ink/30">
                       {new Date(n.created_at).toLocaleDateString("nl-NL", {
                         day: "numeric", month: "short", year: "numeric",

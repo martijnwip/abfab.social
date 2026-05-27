@@ -9,6 +9,16 @@ type MemberStatus = "approved" | "rejected" | "pending";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+export async function rejectNomination(nominationId: string) {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("nominations")
+    .update({ status: "rejected" })
+    .eq("id", nominationId);
+  if (error) throw new Error(error.message);
+  revalidatePath("/admin/nominations");
+}
+
 export async function updateMemberStatus(memberId: string, status: MemberStatus) {
   const supabase = await createClient();
 
