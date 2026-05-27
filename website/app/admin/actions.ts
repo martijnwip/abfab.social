@@ -10,8 +10,8 @@ type MemberStatus = "approved" | "rejected" | "pending";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function deleteNomination(nominationId: string) {
-  const supabase = await createClient();
-  const { error } = await supabase
+  const service = createServiceClient();
+  const { error } = await service
     .from("nominations")
     .delete()
     .eq("id", nominationId);
