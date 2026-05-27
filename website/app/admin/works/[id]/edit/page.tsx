@@ -73,7 +73,7 @@ export default async function EditWorkPage({ params }: { params: Promise<{ id: s
       supabase.from("tags").select("naam").order("naam"),
       supabase.from("work_sources").select("id, type, titel, beschrijving, inhoud, bron, created_at").eq("work_id", id).order("created_at"),
       supabase.from("book_sessions").select("id, datum, locatie, sessie_type, status").eq("work_id", id).order("datum", { ascending: false }),
-      supabase.from("nominations").select("id, voorstel_actief").eq("work_id", id).maybeSingle(),
+      supabase.from("nominations").select("id").eq("work_id", id).maybeSingle(),
     ]);
 
   if (!work) notFound();
@@ -168,7 +168,7 @@ export default async function EditWorkPage({ params }: { params: Promise<{ id: s
               updated_at: work.updated_at as string,
             }}
             hasKaart={hasKaart}
-            voorstelActief={!!(nomination as unknown as { voorstel_actief?: boolean } | null)?.voorstel_actief}
+            voorstelActief={!!(work as unknown as { voorstel_actief?: boolean }).voorstel_actief}
             hasNominatie={!!nomination}
           />
 
