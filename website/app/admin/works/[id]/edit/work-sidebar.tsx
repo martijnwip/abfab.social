@@ -23,17 +23,43 @@ function fmt(d: string) {
 export default function WorkSidebar({
   work,
   hasKaart,
+  voorstelActief,
 }: {
   work: SidebarWork;
   hasKaart: boolean;
+  voorstelActief: boolean;
+  hasNominatie: boolean;
 }) {
   const router = useRouter();
   const [generatingKaart, setGeneratingKaart] = useState(false);
   const [generatingScenario, setGeneratingScenario] = useState(false);
   const [deletingKaart, startDeleteKaart] = useTransition();
+  const [isVoorstelActief, setIsVoorstelActief] = useState(voorstelActief);
+  const [togglingVoorstel, setTogglingVoorstel] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const shortId = `wk_${work.id.replace(/-/g, "").slice(0, 6)}`;
+  const voorstelUrl = `https://www.tijdgeestleest.nl/voorstel/${work.id}`;
+
+  async function toggleVoorstel() {
+    setTogglingVoorstel(true);
+    setError(null);
+    const res = await fetch(`/api/works/${work.id}/voorstel`, { method: "POST" });
+    if (!res.ok) setError((await res.json()).error ?? "Fout");
+    else {
+      const { actief } = await res.json();
+      setIsVoorstelActief(actief);
+      router.refresh();
+    }
+    setTogglingVoorstel(false);
+  }
+
+  async function copyVoorstelUrl() {
+    await navigator.clipboard.writeText(voorstelUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
 
   async function generateKaart() {
     setGeneratingKaart(true);
@@ -115,6 +141,29 @@ export default function WorkSidebar({
           <SidebarItem icon="⊡" shortcut="⌘S" disabled={busy} onClick={generateScenario}>
             {generatingScenario ? "Genereren…" : "Genereer scenario"}
           </SidebarItem>
+        </div>
+      </div>
+
+      {/* Publiceren */}
+      <div>
+        <p className="text-[9px] font-black uppercase tracking-widest text-ink/25 mb-1.5">Publiceren</p>
+        <div className="border border-ink/12 divide-y divide-ink/8">
+          <SidebarItem
+            icon={isVoorstelActief ? "◉" : "○"}
+            disabled={togglingVoorstel}
+            onClick={toggleVoorstel}
+          >
+            {togglingVoorstel
+              ? "Bezig…"
+              : isVoorstelActief
+              ? "Voorstel actief"
+              : "Publiceer voorstel"}
+          </SidebarItem>
+          {isVoorstelActief && (
+            <SidebarItem icon={copied ? "✓" : "⎘"} onClick={copyVoorstelUrl}>
+              {copied ? "Gekopieerd!" : "Kopieer link"}
+            </SidebarItem>
+          )}
         </div>
       </div>
 
