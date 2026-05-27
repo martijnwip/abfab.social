@@ -50,9 +50,16 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const { id } = await params;
   const { work } = await fetchWork(id);
   if (!work) return { title: "Tijdgeest" };
+  const w = work as Work;
+  const auteur = w.auteur ? ` van ${w.auteur}` : "";
+  const drempel = w.voorstel_drempel ?? 6;
+  const eersteAlinea = w.beschrijving?.split("\n\n")[0];
+  const description = eersteAlinea
+    ? `Tijdgeest zoekt lezers voor een avond over dit boek. ${eersteAlinea.replace(/\*([^*]+)\*/g, "$1")}`
+    : `Tijdgeest zoekt ${drempel} lezers voor een avond over ${w.originele_titel}${auteur}. Doe jij mee?`;
   return {
-    title: `${work.originele_titel} — Tijdgeest`,
-    description: work.beschrijving?.split("\n\n")[0] ?? `Een voorstel van Tijdgeest voor ${work.originele_titel}.`,
+    title: `${w.originele_titel}${auteur}`,
+    description,
   };
 }
 
