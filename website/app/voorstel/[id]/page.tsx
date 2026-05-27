@@ -184,33 +184,31 @@ export default async function VoorstelPage({ params }: { params: Promise<{ id: s
                   </div>
                 ))}
               </div>
+
+              {/* Lead tagline */}
+              {(lead || synopsis) && (
+                <p className="text-[18px] sm:text-[22px] font-black leading-[1.35] tracking-tight mt-8 max-w-xl">
+                  {renderWithEmphasis(lead ?? synopsis ?? "")}
+                </p>
+              )}
             </div>
           </div>
         </section>
 
         {/* ── § 02 OVER DIT BOEK ── */}
-        {(lead || synopsis) && (
+        {(bodyLinks || bodyRechts || synopsis) && (
           <section className="mb-16 sm:mb-20 border-t border-ink/12 pt-8">
             <SectionHeader label="Over dit boek" nr="§ 02" />
 
-            {/* Lead */}
-            {(lead || synopsis) && (
-              <p className="text-[22px] sm:text-[28px] font-black leading-[1.3] tracking-tight mb-8 max-w-3xl">
-                {renderWithEmphasis(lead ?? synopsis ?? "")}
-              </p>
-            )}
-
             {/* Body 2-kolommen */}
-            {(bodyLinks || bodyRechts || synopsis) && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-12">
-                <p className="text-[14px] text-ink/65 leading-relaxed">
-                  {bodyLinks ?? synopsis ?? ""}
-                </p>
-                {bodyRechts && (
-                  <p className="text-[14px] text-ink/65 leading-relaxed">{bodyRechts}</p>
-                )}
-              </div>
-            )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-12">
+              <p className="text-[14px] text-ink/65 leading-relaxed">
+                {bodyLinks ?? synopsis ?? ""}
+              </p>
+              {bodyRechts && (
+                <p className="text-[14px] text-ink/65 leading-relaxed">{bodyRechts}</p>
+              )}
+            </div>
           </section>
         )}
 
