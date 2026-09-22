@@ -15,6 +15,7 @@ type Work = {
   taal_origineel: string | null;
   cover_image_url: string | null;
   open_library_work_id: string | null;
+  tags?: string[] | null;
 };
 
 export default function EditWorkForm({ work, availableTags }: { work: Work; availableTags: string[] }) {
@@ -26,7 +27,7 @@ export default function EditWorkForm({ work, availableTags }: { work: Work; avai
     taal_origineel:        work.taal_origineel,
     cover_image_url:       work.cover_image_url,
     open_library_work_id:  work.open_library_work_id,
-    tags:                  (work as any).tags ?? [],
+    tags:                  work.tags ?? [],
   });
 
   const [coverPreview, setCoverPreview] = useState<string | null>(work.cover_image_url);

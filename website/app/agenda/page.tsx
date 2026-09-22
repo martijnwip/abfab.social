@@ -82,7 +82,9 @@ export default async function AgendaPage() {
       .in("session_id", sessionIds);
 
     const userIds = [...new Set(
-      (signupRows ?? []).map((r) => (r as unknown as { members: { user_id: string } }).members.user_id)
+      (signupRows ?? [])
+        .map((r) => (r as unknown as { members: { user_id: string } | null }).members?.user_id)
+        .filter((id): id is string => !!id)
     )];
 
     const { data: { users: authUsers } } = userIds.length
@@ -93,7 +95,8 @@ export default async function AgendaPage() {
 
     for (const row of signupRows ?? []) {
       const sid = row.session_id;
-      const userId = (row as unknown as { members: { user_id: string } }).members.user_id;
+      const userId = (row as unknown as { members: { user_id: string } | null }).members?.user_id;
+      if (!userId) continue;
       const email = emailMap.get(userId) ?? "";
       const initials = email.slice(0, 2).toUpperCase();
       signupCountMap[sid] = (signupCountMap[sid] ?? 0) + 1;

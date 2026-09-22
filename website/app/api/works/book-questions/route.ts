@@ -91,7 +91,10 @@ export async function POST(request: Request) {
   const withoutBookSection = existing.filter((q) => q.sectie !== SECTION_NAME);
   const merged = [...withoutBookSection, ...newQuestions];
 
-  await supabase.from("works").update({ gesprekskaart: merged }).eq("id", work_id);
+  const { error: updateError } = await supabase.from("works").update({ gesprekskaart: merged }).eq("id", work_id);
+  if (updateError) {
+    return NextResponse.json({ error: updateError.message }, { status: 500 });
+  }
 
   return NextResponse.json({ questions: newQuestions, total: merged.length }, { status: 200 });
 }

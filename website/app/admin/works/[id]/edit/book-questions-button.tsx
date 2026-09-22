@@ -32,7 +32,7 @@ export default function BookQuestionsButton({
         router.refresh();
       }
     } catch (err) {
-      setError(String(err));
+      setError(err instanceof Error ? err.message : "Er ging iets mis.");
     }
     setGenerating(false);
   }

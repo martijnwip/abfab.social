@@ -11,7 +11,9 @@ type SourceInput = {
   bron: string | null;
 };
 
-export async function addWorkSource(workId: string, source: SourceInput) {
+type WorkSource = SourceInput & { id: string };
+
+export async function addWorkSource(workId: string, source: SourceInput): Promise<WorkSource> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("work_sources")
@@ -20,10 +22,10 @@ export async function addWorkSource(workId: string, source: SourceInput) {
     .single();
   if (error) throw new Error(error.message);
   revalidatePath(`/admin/works/${workId}/edit`);
-  return data;
+  return data as WorkSource;
 }
 
-export async function deleteWorkSource(id: string) {
+export async function deleteWorkSource(id: string): Promise<void> {
   const supabase = await createClient();
   const { error } = await supabase.from("work_sources").delete().eq("id", id);
   if (error) throw new Error(error.message);

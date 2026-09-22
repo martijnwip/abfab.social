@@ -180,7 +180,7 @@ const OUTPUT_SCHEMA = JSON.stringify({
 
 // ─── Route handler ───────────────────────────────────────────────────────────
 
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<NextResponse> {
   const body = await request.json();
   const work_id: string | undefined = body.work_id;
   const session_id: string | undefined = body.session_id;
@@ -360,20 +360,25 @@ export async function POST(request: Request) {
   }
 
   // 4a. Gesprekskaart → works (gedeeld door alle sessies van dit werk)
-  // 4a. Gesprekskaart → works
   const gesprekskaart = prepData?.gesprekskaart ?? null;
-  await supabase
+  const { error: worksUpdateError } = await supabase
     .from("works")
     .update({ gesprekskaart })
     .eq("id", resolvedWorkId);
+  if (worksUpdateError) {
+    return NextResponse.json({ error: worksUpdateError.message }, { status: 500 });
+  }
 
   // 4b. Overige prep → book_sessions (alleen als aangeroepen via session_id)
   if (session_id) {
     const { gesprekskaart: _omit, ...sessionPrep } = prepData ?? {};
-    await supabase
+    const { error: sessionUpdateError } = await supabase
       .from("book_sessions")
       .update({ session_prep: Object.keys(sessionPrep).length ? sessionPrep : null })
       .eq("id", session_id);
+    if (sessionUpdateError) {
+      return NextResponse.json({ error: sessionUpdateError.message }, { status: 500 });
+    }
   }
 
   return NextResponse.json(prepData, { status: 200 });

@@ -18,10 +18,14 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
 
   const nieuweWaarde = !(work as unknown as { voorstel_actief: boolean }).voorstel_actief;
 
-  await supabase
+  const { error: updateError } = await supabase
     .from("works")
     .update({ voorstel_actief: nieuweWaarde })
     .eq("id", id);
+
+  if (updateError) {
+    return NextResponse.json({ error: updateError.message }, { status: 500 });
+  }
 
   return NextResponse.json({ actief: nieuweWaarde });
 }

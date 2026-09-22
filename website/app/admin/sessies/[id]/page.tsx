@@ -54,9 +54,9 @@ export default async function SessieDetailPage({ params }: { params: Promise<{ i
     .eq("session_id", id);
 
   // E-mailadressen via service client (auth.users)
-  const userIds = (signups ?? []).map(
-    (s) => (s as unknown as { members: { user_id: string } }).members.user_id
-  );
+  const userIds = (signups ?? [])
+    .map((s) => (s as unknown as { members: { user_id: string } | null }).members?.user_id)
+    .filter((id): id is string => !!id);
 
   const { data: { users: authUsers } } = userIds.length
     ? await service.auth.admin.listUsers({ perPage: 1000 })
@@ -65,8 +65,12 @@ export default async function SessieDetailPage({ params }: { params: Promise<{ i
   const emailMap = new Map((authUsers ?? []).map((u) => [u.id, u.email ?? ""]));
 
   const signupsWithEmail = (signups ?? []).map((s) => {
-    const userId = (s as unknown as { members: { user_id: string } }).members.user_id;
-    return { id: s.id, userId, email: emailMap.get(userId) ?? userId };
+    const userId = (s as unknown as { members: { user_id: string } | null }).members?.user_id ?? null;
+    return {
+      id: s.id,
+      userId: userId ?? s.member_id,
+      email: userId ? emailMap.get(userId) ?? userId : "Onbekend lid",
+    };
   });
 
   const gesprekskaart: { sectie?: string; vraag: string; toelichting: string }[] = work?.gesprekskaart ?? [];

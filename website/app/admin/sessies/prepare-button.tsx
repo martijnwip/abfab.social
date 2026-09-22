@@ -29,7 +29,7 @@ export default function PrepareButton({ sessionId }: { sessionId: string }) {
         setStatus("done");
       }
     } catch (err) {
-      setErrorMsg(String(err));
+      setErrorMsg(err instanceof Error ? err.message : "Er ging iets mis.");
       setStatus("error");
     }
   }

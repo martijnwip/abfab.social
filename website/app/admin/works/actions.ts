@@ -17,7 +17,7 @@ export type WorkPayload = {
   tags?: string[];
 };
 
-export async function updateWork(id: string, payload: WorkPayload) {
+export async function updateWork(id: string, payload: WorkPayload): Promise<void> {
   const supabase = await createClient();
 
   const { error } = await supabase.from("works").update(payload).eq("id", id);
@@ -45,7 +45,7 @@ export async function deleteWork(id: string): Promise<{ error?: string }> {
   return {};
 }
 
-export async function createWork(payload: WorkPayload, nominationId?: string) {
+export async function createWork(payload: WorkPayload, nominationId?: string): Promise<void> {
   const supabase = await createClient();
 
   const { data: work, error } = await supabase

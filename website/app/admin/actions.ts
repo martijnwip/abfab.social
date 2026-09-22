@@ -9,7 +9,7 @@ type MemberStatus = "approved" | "rejected" | "pending";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export async function deleteNomination(nominationId: string) {
+export async function deleteNomination(nominationId: string): Promise<void> {
   const service = createServiceClient();
   const { error } = await service
     .from("nominations")
@@ -19,7 +19,7 @@ export async function deleteNomination(nominationId: string) {
   revalidatePath("/admin/nominations");
 }
 
-export async function rejectNomination(nominationId: string) {
+export async function rejectNomination(nominationId: string): Promise<void> {
   const supabase = await createClient();
   const { error } = await supabase
     .from("nominations")
@@ -30,7 +30,7 @@ export async function rejectNomination(nominationId: string) {
   revalidatePath("/admin/nominations");
 }
 
-export async function sendNominationStatusEmail(nominationId: string, status: "approved" | "rejected") {
+export async function sendNominationStatusEmail(nominationId: string, status: "approved" | "rejected"): Promise<void> {
   const service = createServiceClient();
 
   const { data: nomination } = await service
@@ -119,7 +119,7 @@ function nominationEmailHtml(email: string, titel: string, auteur: string | null
 </html>`;
 }
 
-export async function updateMemberStatus(memberId: string, status: MemberStatus) {
+export async function updateMemberStatus(memberId: string, status: MemberStatus): Promise<void> {
   const supabase = await createClient();
 
   const { error } = await supabase
@@ -136,7 +136,7 @@ export async function updateMemberStatus(memberId: string, status: MemberStatus)
   revalidatePath("/admin");
 }
 
-async function sendApprovalEmail(memberId: string) {
+async function sendApprovalEmail(memberId: string): Promise<void> {
   const service = createServiceClient();
 
   const { data: member } = await service
