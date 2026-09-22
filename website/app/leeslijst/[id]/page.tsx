@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import Nav from "@/components/nav";
@@ -15,15 +16,42 @@ function sessionStatus(sessions: { datum: string }[]): "nu" | "binnenkort" | nul
   return diff <= 14 ? "nu" : "binnenkort";
 }
 
-export default async function WorkDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+async function fetchWork(id: string) {
   const supabase = await createClient();
-
   const { data: work } = await supabase
     .from("works")
     .select("*")
     .eq("id", id)
     .single();
+  return work;
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const work = await fetchWork(id);
+  if (!work) return { title: "Tijdgeest" };
+
+  const auteur = work.auteur ? ` van ${work.auteur}` : "";
+  const eersteAlinea = (work.beschrijving as string | null)?.split("\n")[0] ?? null;
+  const description = eersteAlinea
+    ?? `${work.originele_titel}${auteur} — lees mee met Tijdgeest, modern leesgenootschap.`;
+
+  return {
+    title: `${work.originele_titel}${auteur} — Tijdgeest`,
+    description,
+    openGraph: {
+      title: work.originele_titel,
+      description,
+      images: work.cover_image_url ? [work.cover_image_url] : undefined,
+    },
+  };
+}
+
+export default async function WorkDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const supabase = await createClient();
+
+  const work = await fetchWork(id);
 
   if (!work) notFound();
 
