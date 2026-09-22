@@ -21,6 +21,11 @@ export default function DeleteButton({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const router = useRouter();
 
+  function handleOpen() {
+    setErrorMsg(null);
+    setOpen(true);
+  }
+
   function handleConfirm() {
     setErrorMsg(null);
     startTransition(async () => {
@@ -37,7 +42,7 @@ export default function DeleteButton({
   return (
     <>
       <button
-        onClick={() => { setErrorMsg(null); setOpen(true); }}
+        onClick={handleOpen}
         disabled={isPending}
         className={className ?? "block w-full text-left p-0 m-0 bg-transparent border-none text-[10px] font-black uppercase tracking-widest text-terracotta hover:underline disabled:opacity-40 transition-colors cursor-pointer"}
       >

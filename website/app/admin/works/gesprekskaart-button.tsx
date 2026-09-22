@@ -50,25 +50,13 @@ export default function GesprekskaartButton({ workId, titel, hasKaart }: Props) 
 
   return (
     <div className="flex items-center gap-3">
-      {!hasKaart && (
-        <button
-          onClick={handleGenerate}
-          disabled={busy}
-          className="text-[10px] font-black uppercase tracking-widest text-ink/50 hover:text-ink transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer bg-transparent border-none p-0 m-0"
-        >
-          {generating ? "Genereren…" : "Maak gesprekskaart"}
-        </button>
-      )}
-
-      {hasKaart && (
-        <button
-          onClick={handleGenerate}
-          disabled={busy}
-          className="text-[10px] font-black uppercase tracking-widest text-ink/50 hover:text-ink transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer bg-transparent border-none p-0 m-0"
-        >
-          {generating ? "Genereren…" : "Opnieuw genereren"}
-        </button>
-      )}
+      <button
+        onClick={handleGenerate}
+        disabled={busy}
+        className="text-[10px] font-black uppercase tracking-widest text-ink/50 hover:text-ink transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer bg-transparent border-none p-0 m-0"
+      >
+        {generating ? "Genereren…" : hasKaart ? "Opnieuw genereren" : "Maak gesprekskaart"}
+      </button>
 
       {hasKaart && (
         <button

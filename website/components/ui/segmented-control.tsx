@@ -6,16 +6,18 @@ type Option = { value: string; label: string };
 
 type Props = {
   options: Option[];
+  value?: string;
   defaultValue?: string;
-  onChange?: (value: string) => void;
+  onValueChange?: (value: string) => void;
 };
 
-export function SegmentedControl({ options, defaultValue, onChange }: Props) {
-  const [selected, setSelected] = useState(defaultValue ?? options[0]?.value);
+export function SegmentedControl({ options, value, defaultValue, onValueChange }: Props) {
+  const [internalValue, setInternalValue] = useState(defaultValue ?? options[0]?.value);
+  const selected = value ?? internalValue;
 
-  function handleSelect(value: string) {
-    setSelected(value);
-    onChange?.(value);
+  function handleSelect(next: string) {
+    setInternalValue(next);
+    onValueChange?.(next);
   }
 
   return (

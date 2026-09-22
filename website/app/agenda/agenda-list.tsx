@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { useSessionSignup } from "@/lib/hooks/use-session-signup";
 
 type Work = {
   id: string;
@@ -147,11 +147,12 @@ function SignupAction({
   initialSignedUp: boolean;
   isLoggedIn: boolean;
 }) {
-  const [signedUp, setSignedUp] = useState(initialSignedUp);
-  const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
+  const { signedUp, isPending, error, signUp, cancelSignup } = useSessionSignup(
+    session.id,
+    memberId,
+    initialSignedUp
+  );
   const [showSpoilerDialog, setShowSpoilerDialog] = useState(false);
-  const router = useRouter();
 
   // Scenario unlocked 1 week before session date
   const sessionDate = new Date(session.datum);
@@ -206,18 +207,7 @@ function SignupAction({
             Voeg toe aan agenda
           </a>
           <button
-            onClick={() => {
-              startTransition(async () => {
-                const supabase = createClient();
-                await supabase
-                  .from("session_signups")
-                  .delete()
-                  .eq("session_id", session.id)
-                  .eq("member_id", memberId!);
-                setSignedUp(false);
-                router.refresh();
-              });
-            }}
+            onClick={cancelSignup}
             disabled={isPending}
             className="block w-full text-center text-[11px] text-ink/40 hover:text-terracotta underline transition-colors cursor-pointer disabled:opacity-40"
           >
@@ -231,17 +221,7 @@ function SignupAction({
   return (
     <div className="space-y-1">
       <button
-        onClick={() => {
-          setError(null);
-          startTransition(async () => {
-            const supabase = createClient();
-            const { error } = await supabase
-              .from("session_signups")
-              .insert({ session_id: session.id, member_id: memberId });
-            if (error) setError("Er ging iets mis.");
-            else { setSignedUp(true); router.refresh(); }
-          });
-        }}
+        onClick={signUp}
         disabled={isPending || isFull}
         className="block w-full bg-ink text-paper text-[10px] font-black uppercase tracking-[0.12em] px-4 py-3 text-center hover:bg-ink/85 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
       >

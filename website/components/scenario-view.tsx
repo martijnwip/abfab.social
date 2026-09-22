@@ -30,6 +30,23 @@ function Q({ prefix, children }: { prefix: string; children: React.ReactNode }) 
   );
 }
 
+function FaseSection({
+  fase,
+  start,
+  children,
+}: {
+  fase: typeof FASES[number];
+  start: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr] gap-4 sm:gap-10 py-8 sm:py-10 border-t border-ink/15">
+      <FaseSidebar fase={fase} start={start} />
+      {children}
+    </div>
+  );
+}
+
 function FaseSidebar({ fase, start }: { fase: typeof FASES[number]; start: string }) {
   return (
     <>
@@ -127,21 +144,24 @@ export default function ScenarioView({
           <p className="text-[9px] font-mono text-ink/30 hidden sm:block">Start → {TOTAL} min.</p>
         </div>
         <div className="flex">
-          {FASES.map((f) => (
-            <div
-              key={f.nr}
-              className={`border border-r-0 last:border-r border-ink/20 px-1.5 sm:px-2 pt-1.5 pb-2 ${"accent" in f && f.accent ? "bg-terracotta text-paper" : "bg-paper text-ink"}`}
-              style={{ flexBasis: `${(f.min / TOTAL) * 100}%` }}
-            >
-              <div className="flex items-end gap-0.5 sm:gap-1">
-                <span className={`text-[7px] sm:text-[8px] font-black ${"accent" in f && f.accent ? "text-paper/50" : "text-ink/35"}`}>{f.nr}</span>
-                <span className="text-[16px] sm:text-[20px] font-black leading-none tabular-nums">{f.min}</span>
-                <span className={`text-[7px] sm:text-[8px] pb-0.5 ${"accent" in f && f.accent ? "text-paper/60" : "text-ink/40"}`}>
-                  {f.eind.replace("00:", "").replace("01:", "1:")}′
-                </span>
+          {FASES.map((f) => {
+            const isAccent = "accent" in f && f.accent;
+            return (
+              <div
+                key={f.nr}
+                className={`border border-r-0 last:border-r border-ink/20 px-1.5 sm:px-2 pt-1.5 pb-2 ${isAccent ? "bg-terracotta text-paper" : "bg-paper text-ink"}`}
+                style={{ flexBasis: `${(f.min / TOTAL) * 100}%` }}
+              >
+                <div className="flex items-end gap-0.5 sm:gap-1">
+                  <span className={`text-[7px] sm:text-[8px] font-black ${isAccent ? "text-paper/50" : "text-ink/35"}`}>{f.nr}</span>
+                  <span className="text-[16px] sm:text-[20px] font-black leading-none tabular-nums">{f.min}</span>
+                  <span className={`text-[7px] sm:text-[8px] pb-0.5 ${isAccent ? "text-paper/60" : "text-ink/40"}`}>
+                    {f.eind.replace("00:", "").replace("01:", "1:")}′
+                  </span>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
         <div className="hidden sm:flex mt-1.5">
           {FASES.map((f) => (
@@ -157,18 +177,16 @@ export default function ScenarioView({
       </div>
 
       {/* Fase 01 */}
-      <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr] gap-4 sm:gap-10 py-8 sm:py-10 border-t border-ink/15">
-        <FaseSidebar fase={FASES[0]} start={STARTS[0]} />
+      <FaseSection fase={FASES[0]} start={STARTS[0]}>
         <div>
           <p className="text-[14px] text-ink/65 leading-relaxed">{s.welkomstwoord}</p>
           <SubLabel label="IJsbreker" slot="A" count="1 vraag" />
           <Q prefix="Q.">{s.ijsbreker_vraag}</Q>
         </div>
-      </div>
+      </FaseSection>
 
       {/* Fase 02 */}
-      <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr] gap-4 sm:gap-10 py-8 sm:py-10 border-t border-ink/15">
-        <FaseSidebar fase={FASES[1]} start={STARTS[1]} />
+      <FaseSection fase={FASES[1]} start={STARTS[1]}>
         <div>
           <SubLabel label="Personages" slot="A" count="2 vragen" />
           {s.personages && (
@@ -177,11 +195,10 @@ export default function ScenarioView({
           <Q prefix="Q1.">{s.vraag_1}</Q>
           <Q prefix="Q2.">{s.vraag_2}</Q>
         </div>
-      </div>
+      </FaseSection>
 
       {/* Fase 03 */}
-      <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr] gap-4 sm:gap-10 py-8 sm:py-10 border-t border-ink/15">
-        <FaseSidebar fase={FASES[2]} start={STARTS[2]} />
+      <FaseSection fase={FASES[2]} start={STARTS[2]}>
         <div>
           <SubLabel
             label={`Wat ${achternaam} wel én niet zegt`}
@@ -209,11 +226,10 @@ export default function ScenarioView({
             </>
           )}
         </div>
-      </div>
+      </FaseSection>
 
       {/* Fase 04 */}
-      <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr] gap-4 sm:gap-10 py-8 sm:py-10 border-t border-ink/15">
-        <FaseSidebar fase={FASES[3]} start={STARTS[3]} />
+      <FaseSection fase={FASES[3]} start={STARTS[3]}>
         <div>
           <SubLabel label="De rode draad" slot="A" count="2 vragen" />
           <Q prefix="Q1.">{s.vraag_4}</Q>
@@ -221,11 +237,10 @@ export default function ScenarioView({
           <SubLabel label="Actualiteit" slot="B" count="1 vraag" />
           <Q prefix="Q.">{s.actualiteitsvraag}</Q>
         </div>
-      </div>
+      </FaseSection>
 
       {/* Fase 05 */}
-      <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr] gap-4 sm:gap-10 py-8 sm:py-10 border-t border-ink/15">
-        <FaseSidebar fase={FASES[4]} start={STARTS[4]} />
+      <FaseSection fase={FASES[4]} start={STARTS[4]}>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           <div>
             <p className="text-[9px] font-black uppercase tracking-[0.18em] text-ink/35 mb-2">A · 5 min</p>
@@ -256,7 +271,7 @@ export default function ScenarioView({
             </p>
           </div>
         </div>
-      </div>
+      </FaseSection>
 
       {/* Spelregels */}
       <div className="bg-ink text-paper p-5 sm:p-8 mt-4">

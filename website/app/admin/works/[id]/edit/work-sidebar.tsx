@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useOptimistic, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
@@ -34,25 +34,22 @@ export default function WorkSidebar({
   const [generatingKaart, setGeneratingKaart] = useState(false);
   const [generatingScenario, setGeneratingScenario] = useState(false);
   const [deletingKaart, startDeleteKaart] = useTransition();
-  const [isVoorstelActief, setIsVoorstelActief] = useState(voorstelActief);
-  const [togglingVoorstel, setTogglingVoorstel] = useState(false);
+  const [isVoorstelActief, setOptimisticVoorstelActief] = useOptimistic(voorstelActief);
+  const [togglingVoorstel, startTogglingVoorstel] = useTransition();
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const shortId = `wk_${work.id.replace(/-/g, "").slice(0, 6)}`;
   const voorstelUrl = `https://www.tijdgeestleest.nl/voorstel/${work.id}`;
 
-  async function toggleVoorstel() {
-    setTogglingVoorstel(true);
+  function toggleVoorstel() {
     setError(null);
-    const res = await fetch(`/api/works/${work.id}/voorstel`, { method: "POST" });
-    if (!res.ok) setError((await res.json()).error ?? "Fout");
-    else {
-      const { actief } = await res.json();
-      setIsVoorstelActief(actief);
-      router.refresh();
-    }
-    setTogglingVoorstel(false);
+    startTogglingVoorstel(async () => {
+      setOptimisticVoorstelActief(!voorstelActief);
+      const res = await fetch(`/api/works/${work.id}/voorstel`, { method: "POST" });
+      if (!res.ok) setError((await res.json()).error ?? "Fout");
+      else router.refresh();
+    });
   }
 
   async function copyVoorstelUrl() {
@@ -182,11 +179,11 @@ export default function WorkSidebar({
         <p className="text-[9px] font-black uppercase tracking-widest text-ink/25 mb-1.5">Gevaarlijk</p>
         <div className="border border-ink/12 divide-y divide-ink/8">
           {hasKaart && (
-            <SidebarItem icon="🗑" disabled={busy} onClick={deleteKaart} danger>
+            <SidebarItem icon="🗑" disabled={busy} onClick={deleteKaart} variant="danger">
               Verwijder kaart
             </SidebarItem>
           )}
-          <SidebarItem icon="🗑" href="#verwijder" danger>
+          <SidebarItem icon="🗑" href="#verwijder" variant="danger">
             Verwijder boek
           </SidebarItem>
         </div>
@@ -203,7 +200,7 @@ function SidebarItem({
   disabled,
   onClick,
   href,
-  danger,
+  variant = "default",
   children,
 }: {
   icon: string;
@@ -211,13 +208,13 @@ function SidebarItem({
   disabled?: boolean;
   onClick?: () => void;
   href?: string;
-  danger?: boolean;
+  variant?: "default" | "danger";
   children: React.ReactNode;
 }) {
   const baseClass = `w-full flex items-center gap-2.5 px-3 py-2.5 text-[12px] font-black bg-white transition-colors text-left ${
     disabled
       ? "text-ink/25 cursor-not-allowed"
-      : danger
+      : variant === "danger"
       ? "text-terracotta hover:bg-terracotta/5 cursor-pointer"
       : "text-ink/65 hover:text-ink hover:bg-ink/3 cursor-pointer"
   }`;

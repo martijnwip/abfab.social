@@ -1,9 +1,7 @@
 "use client";
 
-import { useState, useTransition } from "react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
+import { useSessionSignup } from "@/lib/hooks/use-session-signup";
 
 type Props = {
   sessionId: string;
@@ -20,10 +18,11 @@ export default function SessionSignupClient({
   alreadySignedUp: initialSignedUp,
   loginUrl,
 }: Props) {
-  const [signedUp, setSignedUp] = useState(initialSignedUp);
-  const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+  const { signedUp, isPending, error, signUp, cancelSignup } = useSessionSignup(
+    sessionId,
+    memberId,
+    initialSignedUp
+  );
 
   // Niet ingelogd
   if (!memberStatus) {
@@ -76,18 +75,7 @@ export default function SessionSignupClient({
           <span className="text-[14px] font-black">Je bent aangemeld voor deze avond.</span>
         </div>
         <button
-          onClick={() => {
-            startTransition(async () => {
-              const supabase = createClient();
-              await supabase
-                .from("session_signups")
-                .delete()
-                .eq("session_id", sessionId)
-                .eq("member_id", memberId!);
-              setSignedUp(false);
-              router.refresh();
-            });
-          }}
+          onClick={cancelSignup}
           disabled={isPending}
           className="text-[11px] text-ink/40 hover:text-terracotta underline transition-colors cursor-pointer disabled:opacity-40"
         >
@@ -101,21 +89,7 @@ export default function SessionSignupClient({
   return (
     <div className="space-y-2">
       <button
-        onClick={() => {
-          setError(null);
-          startTransition(async () => {
-            const supabase = createClient();
-            const { error } = await supabase
-              .from("session_signups")
-              .insert({ session_id: sessionId, member_id: memberId });
-            if (error) {
-              setError("Er ging iets mis. Probeer het opnieuw.");
-            } else {
-              setSignedUp(true);
-              router.refresh();
-            }
-          });
-        }}
+        onClick={signUp}
         disabled={isPending}
         className="bg-ink text-paper text-xs font-black uppercase tracking-[0.12em] px-6 py-3.5 hover:bg-ink/85 transition-colors cursor-pointer disabled:opacity-50"
       >

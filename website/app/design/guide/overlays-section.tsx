@@ -115,7 +115,7 @@ export default function OverlaysSection() {
                   { value: "1-3",  label: "1–3 u" },
                   { value: "gt3",  label: "3+ u" },
                 ]}
-                onChange={setTime}
+                onValueChange={setTime}
               />
               <div className="flex gap-3 mt-6 justify-end">
                 <Button variant="soft" size="md">Misschien later</Button>

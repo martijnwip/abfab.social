@@ -21,6 +21,11 @@ export function ConfirmDialog({
   confirmVariant = "primary",
   onConfirm,
 }: Props) {
+  function handleConfirm() {
+    onConfirm();
+    onOpenChange(false);
+  }
+
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>
@@ -39,7 +44,7 @@ export function ConfirmDialog({
               Annuleren
             </DialogPrimitive.Close>
             <button
-              onClick={() => { onConfirm(); onOpenChange(false); }}
+              onClick={handleConfirm}
               className={`text-xs font-black uppercase tracking-[0.12em] px-4 py-2.5 cursor-pointer transition-colors ${
                 confirmVariant === "danger"
                   ? "bg-terracotta text-paper hover:bg-terracotta/90"
